@@ -1,0 +1,89 @@
+---
+- name: Configure development environment
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Administrative setup actions
+      become: true
+      block:
+        - name: Add Yarn key
+          apt_key: 
+            url: https://dl.yarnpkg.com/debian/pubkey.gpg
+        - name: Add Yarn repository
+          apt_repository:
+            repo: 'deb https://dl.yarnpkg.com/debian/ stable main'
+
+        - name: Add Azure CLI key
+          apt_key:
+            id: 417A0893
+            keyserver: packages.microsoft.com
+        - name: Add Azure CLI to sources list
+          apt_repository:
+            repo: deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main
+
+        - name: Add Node key
+          apt_key:
+            url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+        - name: Add Node to sources list
+          apt_repository:
+            repo: '{{item}}'
+            filename: nodesource
+          with_items:
+            - deb https://deb.nodesource.com/node_8.x xenial main
+            - deb-src https://deb.nodesource.com/node_8.x xenial main
+
+        - name: Add Docker key
+          apt_key:
+            url: https://download.docker.com/linux/ubuntu/gpg
+        - name: Add Docker to sources list
+          apt_repository:
+            repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+
+        - name: Add neofetch repository
+          apt_repository:
+            repo: ppa:dawidd0811/neofetch
+
+        - name: Update apt-cache
+          apt:
+            update_cache: yes
+            cache_valid_time: 3600
+
+        - name: Install packages
+          apt:
+            name: '{{item}}'
+          with_items:
+            - apt-transport-https
+            - ca-certificates
+            - curl
+            - software-properties-common
+            - jq
+            - yarn
+            - azure-cli
+            - nodejs
+            - docker-ce
+            - git
+            - zsh
+            - neofetch
+
+        - name: Upgrade all packages
+          apt:
+            upgrade: yes
+
+        - name: Set Zsh as the default shell
+          user:
+            name: noel
+            shell: /bin/zsh
+
+    - name: Cloning oh-my-zsh
+      git:
+        repo: https://github.com/robbyrussell/oh-my-zsh
+        dest: ~/.oh-my-zsh
+
+    - name: Link dotfiles
+      file:
+        state: link
+        src: '~/devenv/{{item}}'
+        dest: '~/{{item}}'
+      with_items:
+        - '.zshrc'
+        - '.dircolors'

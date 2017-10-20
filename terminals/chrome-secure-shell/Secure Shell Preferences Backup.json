@@ -1,0 +1,38 @@
+{
+  "magic": "nassh-prefs",
+  "version": 1,
+  "hterm": {
+    "default": {
+      "background-color": "#002b36",
+      "cursor-blink": true,
+      "cursor-color": "#839496",
+      "color-palette-overrides": [
+        "#073642",
+        "#dc322f",
+        "#859900",
+        "#b58900",
+        "#268bd2",
+        "#d33682",
+        "#2aa198",
+        "#eee8d5",
+        "#002b36",
+        "#cb4b16",
+        "#586e75",
+        "#657b83",
+        "#839496",
+        "#6c71c4",
+        "#93a1a1",
+        "#fdf6e3"
+      ],
+      "enable-bold": false,
+      "enable-blink": false,
+      "environment": {
+        "TERM": "xterm-256color"
+      },
+      "font-family": "\"Ubuntu Mono\", monospace",
+      "font-size": "16",
+      "foreground-color": "#839496",
+      "user-css": "https://cdn.rawgit.com/wernight/powerline-web-fonts/4c2fbd9a52a443fbdf00c9eb79e615f1bed3a55c/PowerlineFonts.css"
+    }
+  }
+}
