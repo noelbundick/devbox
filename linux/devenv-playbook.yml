@@ -64,10 +64,39 @@
             - git
             - zsh
             - neofetch
+            - build-essential
 
         - name: Upgrade all packages
           apt:
             upgrade: yes
+
+        - name: Download & extract Go
+          unarchive:
+            src: https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz
+            dest: /usr/local
+            remote_src: yes
+            creates: /usr/local/go/bin/go
+
+        - name: Download kubectl
+          get_url:
+            url: https://storage.googleapis.com/kubernetes-release/release/v1.8.1/bin/linux/amd64/kubectl
+            dest: /usr/local/bin/kubectl
+            mode: 0755
+
+        - name: Download & extract Helm
+          unarchive:
+            src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.0-rc1-linux-amd64.tar.gz
+            dest: /usr/local/src/
+            remote_src: yes
+            creates: /usr/local/src/linux-amd64/helm
+
+        - name: Copy Helm to /usr/local/bin
+          copy:
+            src: /usr/local/src/linux-amd64/helm
+            dest: /usr/local/bin/helm
+            remote_src: yes
+            force: no
+            mode: 0755
 
         - name: Set Zsh as the default shell
           user:
@@ -79,10 +108,23 @@
         repo: https://github.com/robbyrussell/oh-my-zsh
         dest: ~/.oh-my-zsh
 
+    - name: Add Go to the PATH
+      copy:
+        dest: ~/.oh-my-zsh/custom/go-config.zsh
+        content: |
+          export PATH=/usr/local/go/bin:$PATH
+          export GOPATH=$HOME/go
+          export PATH=$GOPATH/bin:$PATH
+
+    - name: Cloning devbox repo
+      git:
+        repo: https://github.com/noelbundick/devbox
+        dest: ~/.devbox
+
     - name: Link dotfiles
       file:
         state: link
-        src: '~/devenv/{{item}}'
+        src: '~/.devbox/linux/{{item}}'
         dest: '~/{{item}}'
       with_items:
         - '.zshrc'
