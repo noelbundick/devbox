@@ -135,3 +135,11 @@
         - .zshrc
         - .dircolors
         - .zsh-custom
+
+    - name: Update ownership of home folder
+      file:
+        dest: ~/
+        state: directory
+        owner: noel
+        group: noel
+        recurse: yes

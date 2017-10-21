@@ -4,12 +4,11 @@ alias k="kubectl"
 
 # Remove all Docker containers
 function dnuke() {
-  read -p "Are you sure? [y/N]" -n 1 -r
-  echo # new line
-  if [[ $REPLY =~ ^[Y/y]$ ]]
-  then
+  if read -q '?Are you sure (y/N)?'; then
+    echo # empty line
     docker rm --force $(docker ps -aq)
   fi
+  echo # empty line
 }
 
 # SSH agent with default key
