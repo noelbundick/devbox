@@ -7,4 +7,4 @@ sudo apt update
 sudo apt install -y ansible
 sudo echo "localhost ansible_connection=local" > /etc/ansible/hosts
 
-# sudo ansible-playbook /mnt/c/code/devbox/linux/devenv-playbook.yml
+sudo ansible-playbook /mnt/c/code/devbox/linux/devenv-playbook.yml
