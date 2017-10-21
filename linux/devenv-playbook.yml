@@ -130,7 +130,6 @@
       file:
         state: link
         src: '~/.devbox/linux/{{item}}'
-        src: '/mnt/c/code/devbox/linux/{{item}}'
         dest: '~/{{item}}'
       with_items:
         - .zshrc
