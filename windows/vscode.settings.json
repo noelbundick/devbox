@@ -1,0 +1,6 @@
+{
+    "git.confirmSync": false,
+    "editor.tabSize": 2,
+    "extensions.ignoreRecommendations": false,
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\bash.exe"
+}

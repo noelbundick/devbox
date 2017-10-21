@@ -65,10 +65,15 @@
             - zsh
             - neofetch
             - build-essential
+            - python-pip
 
         - name: Upgrade all packages
           apt:
             upgrade: yes
+
+        - name: Install argcomplete for Azure CLI
+          pip:
+            name: argcomplete
 
         - name: Download & extract Go
           unarchive:
@@ -125,7 +130,9 @@
       file:
         state: link
         src: '~/.devbox/linux/{{item}}'
+        src: '/mnt/c/code/devbox/linux/{{item}}'
         dest: '~/{{item}}'
       with_items:
-        - '.zshrc'
-        - '.dircolors'
+        - .zshrc
+        - .dircolors
+        - .zsh-custom
