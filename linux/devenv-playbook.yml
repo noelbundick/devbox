@@ -103,6 +103,10 @@
             force: no
             mode: 0755
 
+        - name: Install sfctl
+          pip:
+            name: sfctl
+
         - name: Set Zsh as the default shell
           user:
             name: noel
