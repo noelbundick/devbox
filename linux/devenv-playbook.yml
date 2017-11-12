@@ -125,11 +125,15 @@
           export GOPATH=$HOME/go
           export PATH=$GOPATH/bin:$PATH
 
-    - name: Cloning devbox repo
-      when: devbox_dev is undefined
-      git:
-       repo: https://github.com/noelbundick/devbox
-       dest: ~/.devbox
+    - name: Set up devbox repo
+      block:
+        - when: devbox_dev is undefined
+          git:
+            repo: https://github.com/noelbundick/devbox
+            dest: ~/.devbox
+        - command: git remote set-url --push origin git@github.com:noelbundick/devbox.git
+          args:
+            chdir: ~/.devbox
 
     - name: Link dotfiles
       file:
