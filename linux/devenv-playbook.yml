@@ -137,6 +137,7 @@
         dest: '~/{{item}}'
       with_items:
         - .dircolors
+        - .tmux.conf
         - .vimrc
         - .zsh-custom
         - .zshrc
