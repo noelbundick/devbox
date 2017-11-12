@@ -126,9 +126,10 @@
           export PATH=$GOPATH/bin:$PATH
 
     - name: Cloning devbox repo
+      when: devbox_dev is undefined
       git:
-        repo: https://github.com/noelbundick/devbox
-        dest: ~/.devbox
+       repo: https://github.com/noelbundick/devbox
+       dest: ~/.devbox
 
     - name: Link dotfiles
       file:
@@ -141,6 +142,15 @@
         - .vimrc
         - .zsh-custom
         - .zshrc
+
+    - name: Vim setup
+      block:
+        - file:
+            path: ~/.vim/autoload
+            state: directory
+        - get_url:
+            url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+            dest: ~/.vim/autoload/plug.vim
 
     - name: Update ownership of home folder
       file:
