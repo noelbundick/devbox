@@ -162,12 +162,6 @@
           export GOPATH=$HOME/go
           export PATH=$GOPATH/bin:$PATH
 
-    - name: Add acs-engine to the PATH
-      copy:
-        dest: ~/.oh-my-zsh/custom/acs-engine-config.zsh
-        content: |
-          export PATH=/usr/local/acs-engine/:$PATH
-
     - name: Set up devbox repo
       block:
         - name: Clone noelbundick/devbox
