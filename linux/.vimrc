@@ -1,3 +1,6 @@
+" vimrc ideas
+" https://dougblack.io/words/a-good-vimrc.html
+
 " vim-plug configuration
 call plug#begin('~/.vim/plugged')
 

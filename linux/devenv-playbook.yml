@@ -88,20 +88,46 @@
             dest: /usr/local/bin/kubectl
             mode: 0755
 
-        - name: Download & extract Helm
-          unarchive:
-            src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.0-rc1-linux-amd64.tar.gz
-            dest: /usr/local/src/
-            remote_src: yes
-            creates: /usr/local/src/linux-amd64/helm
+        - name: Install Helm
+          block:
+            - name: Create staging directory for Helm
+              file:
+                path: /usr/local/src/helm
+                state: directory
+            - name: Download and extract Helm
+              unarchive:
+                src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.0-rc1-linux-amd64.tar.gz
+                dest: /usr/local/src/helm
+                remote_src: yes
+                creates: /usr/local/src/helm/linux-amd64/helm
+            - name: Copy Helm to /usr/local/bin
+              copy:
+                src: /usr/local/src/helm/linux-amd64/helm
+                dest: /usr/local/bin/helm
+                remote_src: yes
+                force: no
+                mode: 0755
 
-        - name: Copy Helm to /usr/local/bin
-          copy:
-            src: /usr/local/src/linux-amd64/helm
-            dest: /usr/local/bin/helm
-            remote_src: yes
-            force: no
-            mode: 0755
+        - name: Install acs-engine
+          block:
+            - name: Create staging directory for acs-engine
+              file:
+                path: /usr/local/src/acs-engine
+                state: directory
+            - name: Extract acs-engine
+              unarchive:
+                src: https://github.com/Azure/acs-engine/releases/download/v0.9.3/acs-engine-v0.9.3-linux-amd64.tar.gz
+                dest: /usr/local/src/acs-engine
+                remote_src: yes
+                creates: /usr/local/src/acs-engine/acs-engine
+                extra_opts: ['--strip-components=1']
+            - name: Copy acs-engine to /usr/local/bin
+              copy:
+                src: /usr/local/src/acs-engine/acs-engine
+                dest: /usr/local/bin/acs-engine
+                remote_src: yes
+                force: no
+                mode: 0755
 
         - name: Install sfctl
           pip:
@@ -125,13 +151,28 @@
           export GOPATH=$HOME/go
           export PATH=$GOPATH/bin:$PATH
 
+    - name: Add acs-engine to the PATH
+      copy:
+        dest: ~/.oh-my-zsh/custom/acs-engine-config.zsh
+        content: |
+          export PATH=/usr/local/acs-engine/:$PATH
+
     - name: Set up devbox repo
       block:
-        - when: devbox_dev is undefined
+        - name: Clone noelbundick/devbox
+          when: devbox_dev is undefined
           git:
             repo: https://github.com/noelbundick/devbox
             dest: ~/.devbox
-        - command: git remote set-url --push origin git@github.com:noelbundick/devbox.git
+        - name: Check for ssh git remote
+          shell: git remote -v | grep git@github.com
+          args:
+            chdir: ~/.devbox
+          register: devbox_git_remote
+          changed_when: false
+        - name: Use ssh when pushing changes to origin
+          when: not devbox_git_remote
+          command: 'git remote set-url --push origin git@github.com:noelbundick/devbox.git'
           args:
             chdir: ~/.devbox
 
