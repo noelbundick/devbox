@@ -2,6 +2,7 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-vinegar'
 Plug 'altercation/vim-colors-solarized'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -55,5 +56,4 @@ let g:airline#extensions#tabline#enabled=1
 " use the solarized theme for the airline status bar
 let g:airline_theme='solarized'
 let g:airline_solarized_bg='dark'
-
 
