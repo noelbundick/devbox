@@ -3,6 +3,8 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'tpope/vim-sensible'
 Plug 'altercation/vim-colors-solarized'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
 " reminder - call :PlugInstall to install plugins!
@@ -29,13 +31,29 @@ set foldlevelstart=10   " open most folds by default
 set foldnestmax=10      " 10 nested fold max
 " reminder - open/close folds with za
 
-" Use solarized dark
-set background=dark
-colorscheme solarized
-
-set mouse=a
+set mouse=a             " enable the mouse
 
 " set yaml to 2 space indent
 autocmd FileType yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+
+" --- altercation/vim-colors/solarized ---
+colorscheme solarized   " use solarized color scheme
+set background=dark     " use solarized dark
+
+" --- vim-airline/vim-airline ---
+set laststatus=2        " always show statusbar
+
+" use powerline fonts
+let g:airline_powerline_fonts=1
+
+" show PASTE if in paste mode
+let g:airline_detect_paste=1
+
+" show airline for tabs too
+let g:airline#extensions#tabline#enabled=1
+
+" use the solarized theme for the airline status bar
+let g:airline_theme='solarized'
+let g:airline_solarized_bg='dark'
 
 
