@@ -20,3 +20,12 @@ function ssa() {
   eval $(ssh-agent -s)
   ssh-add ~/.ssh/id_rsa
 }
+
+# mimic armclient (https://github.com/projectkudu/ARMClient)
+function armclient() {
+  local METHOD=$1
+  local URL=$2
+  local ACCESS_TOKEN=`az account get-access-token --query accessToken -o tsv`
+
+  curl -s -X $METHOD -H "Authorization: Bearer $ACCESS_TOKEN" "https://management.azure.com$URL" | jq
+}

@@ -37,8 +37,9 @@ set foldnestmax=10      " 10 nested fold max
 
 set mouse=a             " enable the mouse
 
-" set yaml to 2 space indent
+" set some file types to 2 space indent
 autocmd FileType yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+autocmd FileType zsh setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 
 " --- altercation/vim-colors/solarized ---
 colorscheme solarized   " use solarized color scheme
