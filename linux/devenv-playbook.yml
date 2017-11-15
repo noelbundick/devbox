@@ -66,6 +66,7 @@
             - neofetch
             - build-essential
             - python-pip
+            - tmux
 
         - name: Upgrade all packages
           apt:
