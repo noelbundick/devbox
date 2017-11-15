@@ -67,6 +67,7 @@
             - build-essential
             - python-pip
             - tmux
+            - vim
 
         - name: Upgrade all packages
           apt:
