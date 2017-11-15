@@ -175,6 +175,7 @@
             chdir: ~/.devbox
           register: devbox_git_remote
           changed_when: false
+          ignore_errors: true
         - name: Use ssh when pushing changes to origin
           when: not devbox_git_remote
           command: 'git remote set-url --push origin git@github.com:noelbundick/devbox.git'
