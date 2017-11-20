@@ -23,8 +23,9 @@ set showmatch           " highlight matching [{()}]
 set hlsearch            " highlight searches
 " reminder - disable highlight with :noh
 
-set tabstop=4           " number of spaces per visual tab
-set softtabstop=4       " number of spaces per tab when editing
+set tabstop=2           " number of spaces per visual tab
+set softtabstop=2       " number of spaces per tab when editing
+set shiftwidth=2        " number of spaces to indent with <<, >>, and automatic indentation
 set expandtab           " use spaces over tabs
 filetype indent on      " load filetype-specific indent files
 
@@ -40,6 +41,10 @@ set mouse=a             " enable the mouse
 " set some file types to 2 space indent
 autocmd FileType yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 autocmd FileType zsh setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+
+set splitbelow          " open new :sp/:split panes below
+set splitright          " open new :vsp/:vsplit panes to the right
+" reminder - navigate panes with Ctrl+W, h/j/k/l
 
 " --- altercation/vim-colors/solarized ---
 colorscheme solarized   " use solarized color scheme
