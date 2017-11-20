@@ -149,6 +149,9 @@
           user:
             name: noel
             shell: /bin/zsh
+            append: yes
+            groups:
+              - docker
 
     - name: Cloning oh-my-zsh
       git:
@@ -184,6 +187,14 @@
             chdir: ~/.devbox
 
     - name: Link dotfiles
+      file:
+        state: link
+        src: '~/.devbox/dotfiles/{{item}}'
+        dest: '~/{{item}}'
+      with_items:
+        - .gitconfig
+
+    - name: Link Linux-specific dotfiles
       file:
         state: link
         src: '~/.devbox/linux/{{item}}'
