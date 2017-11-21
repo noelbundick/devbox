@@ -165,8 +165,6 @@
         dest: ~/.oh-my-zsh/custom/go-config.zsh
         content: |
           export PATH=/usr/local/go/bin:$PATH
-          export GOPATH=$HOME/go
-          export PATH=$GOPATH/bin:$PATH
 
     - name: Set up devbox repo
       block:
