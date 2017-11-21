@@ -1,8 +1,9 @@
 # Aliases
+alias ccat="pygmentize -g"
 alias d="docker"
-alias k="kubectl"
 alias devbox-update="sudo ansible-playbook ~/.devbox/linux/devenv-playbook.yml"
 alias devbox-update-dev="sudo ansible-playbook -e devbox_dev=true ~/.devbox/linux/devenv-playbook.yml"
+alias k="kubectl"
 alias vimrc="vim ~/.vimrc"
 alias zshrc="vim ~/.zshrc"
 

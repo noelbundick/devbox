@@ -68,6 +68,7 @@
             - python-pip
             - tmux
             - vim
+            - python-pygments
 
         - name: Upgrade all packages
           apt:
