@@ -1,3 +1,5 @@
 [user]
 name = Noel Bundick
 email = noelbundick@gmail.com
+[push]
+	default = simple
