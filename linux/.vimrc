@@ -46,6 +46,11 @@ set splitbelow          " open new :sp/:split panes below
 set splitright          " open new :vsp/:vsplit panes to the right
 " reminder - navigate panes with Ctrl+W, h/j/k/l
 
+" auto-insert pairing braces/brackets/etc when creating a block
+inoremap {<CR> {<CR>}<Esc>ko
+inoremap [<CR> [<CR>]<Esc>ko
+inoremap (<CR> (<CR>)<Esc>ko
+
 " --- altercation/vim-colors/solarized ---
 colorscheme solarized   " use solarized color scheme
 set background=dark     " use solarized dark
