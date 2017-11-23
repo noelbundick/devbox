@@ -7,7 +7,7 @@
       become: true
       block:
         - name: Add Yarn key
-          apt_key: 
+          apt_key:
             url: https://dl.yarnpkg.com/debian/pubkey.gpg
         - name: Add Yarn repository
           apt_repository:
@@ -160,12 +160,6 @@
         repo: https://github.com/robbyrussell/oh-my-zsh
         dest: ~/.oh-my-zsh
 
-    - name: Add Go to the PATH
-      copy:
-        dest: ~/.oh-my-zsh/custom/go-config.zsh
-        content: |
-          export PATH=/usr/local/go/bin:$PATH
-
     - name: Set up devbox repo
       block:
         - name: Clone noelbundick/devbox
@@ -203,6 +197,9 @@
           get_url:
             url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
             dest: ~/.vim/autoload/plug.vim
+        - name: Install vim plugins
+          command: vim +PlugInstall +qall
+          changed_when: false
 
     - name: Link dotfiles
       file:
