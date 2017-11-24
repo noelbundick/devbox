@@ -35,8 +35,13 @@ Exclusions
 * `C:\code`
 * `C:\Users\noelb\AppData\Local\Packages\CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc`
 
+### Windows Subsystem for Linux
+
+* [Setup Linux environment](https://github.com/noelbundick/devbox/tree/master/linux)
+
 ## Useful shortcuts
 
 * `Win+R` - Run a command / launch a program
 * `Win+Tab` - Show all windows, manage virtual desktops
 * `Ctrl+Win+Left/Right` - Switch virtual desktops
+* `Win+Arrow keys` - Snap windows
