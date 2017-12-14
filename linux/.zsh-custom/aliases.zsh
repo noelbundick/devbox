@@ -9,6 +9,11 @@ alias tmuxrc="vim ~/.tmux.conf"
 alias vimrc="vim ~/.vimrc"
 alias zshrc="vim ~/.zshrc"
 
+# Prefer VS Code Insiders
+if which code-insiders > /dev/null; then
+  alias code=code-insiders
+fi
+
 # Remove all Docker containers
 function dnuke() {
   if read -q '?Are you sure (y/N)?'; then
