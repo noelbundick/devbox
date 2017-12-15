@@ -86,6 +86,12 @@
             remote_src: yes
             creates: /usr/local/go/bin/go
 
+        - name: Download dep (for Go dependencies)
+          get_url:
+            url: https://github.com/golang/dep/releases/download/v0.3.2/dep-linux-amd64
+            dest: /usr/local/bin/dep
+            mode: 0755
+
         - name: Download kubectl
           get_url:
             url: https://storage.googleapis.com/kubernetes-release/release/v1.8.1/bin/linux/amd64/kubectl
