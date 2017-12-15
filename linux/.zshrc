@@ -93,6 +93,10 @@ unsetopt prompt_cr prompt_sp
 # Hide username when logged in locally
 DEFAULT_USER=$USER
 
+# Set vim as the default editor
+export VISUAL=vim
+export EDITOR="$VISUAL"
+
 # Pretty colors
 eval `dircolors ~/.dircolors`
 
