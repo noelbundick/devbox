@@ -69,6 +69,7 @@
             - tmux
             - vim
             - python-pygments
+            - cmake
 
         - name: Upgrade all packages
           apt:
