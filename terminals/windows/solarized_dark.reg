@@ -1,4 +1,4 @@
-﻿Windows Registry Editor Version 5.00
+Windows Registry Editor Version 5.00
 
 ; Registry file that maps the solarized palette to the 16 avaliable colors
 ; in a Windows command prompt. Note, hex values in the table are RGB but byte
@@ -30,7 +30,7 @@
 "FontSize"=dword:00100008
 "FontFamily"=dword:00000036
 "FontWeight"=dword:00000190
-"FaceName"="Ubuntu Mono derivative Powerlin"
+"FaceName"="DejaVu Sans Mono for Powerline"
 "ScreenColors"=dword:00000089
 "ColorTable00"=dword:00423607
 "ColorTable01"=dword:00d28b26

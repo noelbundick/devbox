@@ -14,13 +14,13 @@ function Install-Font()
   $fonts.CopyHere($fullPath)
 }
 
-# Install the Ubuntu Mono derivative Powerline font
+# Install the DejaVu Sans Mono for Powerline font
 Invoke-WebRequest `
-  -Uri 'https://github.com/powerline/fonts/raw/master/UbuntuMono/Ubuntu%20Mono%20derivative%20Powerline.ttf' `
+  -Uri 'https://github.com/powerline/fonts/raw/master/DejaVuSansMono/DejaVu%20Sans%20Mono%20for%20Powerline.ttf' `
   -UseBasicParsing -OutFile `
-  UbuntuMonoPowerline.ttf
-Install-Font .\UbuntuMonoPowerline.ttf
-Remove-Item .\UbuntuMonoPowerline.ttf
+  DejaVuMonoPowerline.ttf
+Install-Font .\DejaVuMonoPowerline.ttf
+Remove-Item .\DejaVuMonoPowerline.ttf
 
 # Set Ubuntu WSL colors to solarized dark
 reg import .\solarized_dark.reg
