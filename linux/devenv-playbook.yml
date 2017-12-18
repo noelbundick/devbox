@@ -70,6 +70,8 @@
             - vim
             - python-pygments
             - cmake
+            - zip
+            - unzip
 
         - name: Upgrade all packages
           apt:
@@ -117,6 +119,14 @@
                 remote_src: yes
                 force: no
                 mode: 0755
+
+        - name: Install terraform
+          unarchive:
+            src: https://releases.hashicorp.com/terraform/0.11.1/terraform_0.11.1_linux_amd64.zip
+            dest: /usr/local/bin
+            remote_src: yes
+            creates: /usr/local/bin/terraform
+            mode: 0755
 
         - name: Install acs-engine
           block:
