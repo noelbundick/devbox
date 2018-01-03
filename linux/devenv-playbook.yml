@@ -128,6 +128,12 @@
             creates: /usr/local/bin/terraform
             mode: 0755
 
+        - name: Install minikube
+          get_url:
+            url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+            dest: /usr/local/bin/minikube
+            mode: 0755
+
         - name: Install acs-engine
           block:
             - name: Create staging directory for acs-engine
