@@ -9,7 +9,7 @@
         - name: Add Yarn key
           apt_key:
             url: https://dl.yarnpkg.com/debian/pubkey.gpg
-        - name: Add Yarn repository
+        - name: Add Yarn to sources list
           apt_repository:
             repo: 'deb https://dl.yarnpkg.com/debian/ stable main'
 
@@ -20,6 +20,10 @@
         - name: Add Azure CLI to sources list
           apt_repository:
             repo: deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main
+
+        - name: Add .NET to sources list
+          apt_repository:
+            repo: deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod xenial main
 
         - name: Add Node key
           apt_key:
@@ -72,6 +76,7 @@
             - cmake
             - zip
             - unzip
+            - dotnet-sdk-2.0.2
 
         - name: Upgrade all packages
           apt:
@@ -100,6 +105,18 @@
             dest: /usr/local/bin/kubectl
             mode: 0755
 
+        - name: Install minikube and dependencies
+          when: devbox_minikube is defined
+          block:
+            - name: Install virtualbox
+              apt:
+                name: virtualbox
+            - name: Install minikube
+              get_url:
+                url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+                dest: /usr/local/bin/minikube
+                mode: 0755
+
         - name: Install Helm
           block:
             - name: Create staging directory for Helm
@@ -108,7 +125,7 @@
                 state: directory
             - name: Download and extract Helm
               unarchive:
-                src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.0-rc1-linux-amd64.tar.gz
+                src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.2-linux-amd64.tar.gz
                 dest: /usr/local/src/helm
                 remote_src: yes
                 creates: /usr/local/src/helm/linux-amd64/helm
@@ -158,6 +175,33 @@
         - name: Install sfctl
           pip:
             name: sfctl
+
+        - name: Install Ark
+          unarchive:
+            src: https://github.com/heptio/ark/releases/download/v0.6.0/ark-v0.6.0-linux-amd64.tar.gz
+            dest: /usr/local/bin
+            remote_src: yes
+            creates: /usr/local/bin/ark
+
+        - name: Install Hugo
+          block:
+            - name: Create staging directory for Hugo
+              file:
+                path: /usr/local/src/hugo
+                state: directory
+            - name: Extract Hugo
+              unarchive:
+                src: https://github.com/gohugoio/hugo/releases/download/v0.32.2/hugo_0.32.2_Linux-64bit.tar.gz
+                dest: /usr/local/src/hugo
+                remote_src: yes
+                creates: /usr/local/src/hugo/ugo
+            - name: Copy hHugo to /usr/local/bin
+              copy:
+                src: /usr/local/src/hugo/hugo
+                dest: /usr/local/bin/hugo
+                remote_src: yes
+                force: no
+                mode: 0755
 
         - name: Install Minecraft tools
           block:
@@ -241,7 +285,6 @@
         - .dircolors
         - .tmux.conf
         - .vimrc
-        - .zsh-custom
         - .zshrc
 
     - name: Update ownership of home folder
