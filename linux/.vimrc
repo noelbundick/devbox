@@ -43,9 +43,16 @@ set mouse=a             " enable the mouse
 autocmd FileType yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 autocmd FileType zsh setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 
+" reminder - use :sp and :vsp to create splits
+" reminder - navigate splits with Ctrl+W, h/j/k/l
 set splitbelow          " open new :sp/:split panes below
 set splitright          " open new :vsp/:vsplit panes to the right
-" reminder - navigate panes with Ctrl+W, h/j/k/l
+
+" use ctrl+h/j/k/l for split navigation
+nnoremap <C-H> <C-W><C-H>
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
 
 " auto-insert pairing braces/brackets/etc when creating a block
 inoremap {<CR> {<CR>}<Esc>ko
