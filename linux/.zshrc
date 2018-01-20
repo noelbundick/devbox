@@ -85,7 +85,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # Pretty stats at login
-if [ -f /usr/bin/neofetch ]; then neofetch; fi
+if [[ -f /usr/bin/neofetch && -z $TMUX ]]; then neofetch; fi
 
 # Remove % end of line prompts
 unsetopt prompt_cr prompt_sp
