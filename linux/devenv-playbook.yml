@@ -314,6 +314,18 @@
         - .vimrc
         - .zshrc
 
+    - name: Link VS Code settings
+      block:
+        - name: Ensure VS Code folder exists
+          file:
+            path: '~/.config/Code/User'
+            state: directory
+        - name: Link settings.json
+          file:
+            state: link
+            src: '~/.devbox/dotfiles/settings.json'
+            dest: '~/.config/Code/User/settings.json'
+
     - name: Update ownership of home folder
       file:
         dest: ~/
