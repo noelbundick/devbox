@@ -105,6 +105,39 @@
             dest: /usr/local/bin/kubectl
             mode: 0755
 
+        - name: Install kubectx
+          block:
+            - name: Create staging directory for kubectx
+              file:
+                path: /usr/local/src/kubectx
+                state: directory
+            - name: Download and extract kubectx
+              unarchive:
+                src: https://github.com/ahmetb/kubectx/archive/v0.4.0.tar.gz
+                dest: /usr/local/src/kubectx
+                remote_src: yes
+                creates: /usr/local/src/kubectx/kubectx
+                extra_opts: ['--strip-components=1']
+            - name: Copy tools to /usr/local/bin
+              file:
+                state: link
+                src: '/usr/local/src/kubectx/{{item}}'
+                dest: '/usr/local/bin/{{item}}'
+                remote_src: yes
+                force: no
+                mode: 0755
+              with_items:
+                - kubectx
+                - kubens
+            - name: Link completion scripts
+              file:
+                state: link
+                src: '/usr/local/src/kubectx/completion/{{item.src}}'
+                dest: '/usr/share/zsh/functions/Completion/{{item.dest}}'
+              with_items:
+                - { src: 'kubectx.zsh', dest: '_kubectx' }
+                - { src: 'kubens.zsh', dest: '_kubens' }
+
         - name: Install minikube and dependencies
           when: devbox_minikube is defined
           block:
@@ -143,12 +176,6 @@
             dest: /usr/local/bin
             remote_src: yes
             creates: /usr/local/bin/terraform
-            mode: 0755
-
-        - name: Install minikube
-          get_url:
-            url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-            dest: /usr/local/bin/minikube
             mode: 0755
 
         - name: Install acs-engine

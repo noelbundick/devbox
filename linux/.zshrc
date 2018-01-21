@@ -85,7 +85,8 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # Pretty stats at login
-if [[ -f /usr/bin/neofetch && -z $TMUX ]]; then neofetch; fi
+# Do not show in tmux or VS Code terminal
+if [[ -f /usr/bin/neofetch && -z $TMUX && -z $VSCODE_CLI ]]; then neofetch; fi
 
 # Remove % end of line prompts
 unsetopt prompt_cr prompt_sp
@@ -103,3 +104,4 @@ eval `dircolors ~/.dircolors`
 # Autocompletion
 source <(kubectl completion zsh)
 source /opt/az/bin/az.completion.sh &>/dev/null
+
