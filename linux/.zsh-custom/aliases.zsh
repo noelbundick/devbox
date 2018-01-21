@@ -5,6 +5,8 @@ alias devbox-update="sudo ansible-playbook ~/.devbox/linux/devenv-playbook.yml"
 alias devbox-update-dev="sudo ansible-playbook -e devbox_dev=true ~/.devbox/linux/devenv-playbook.yml"
 alias devrc="vi ~/.devbox/linux/devenv-playbook.yml"
 alias k="kubectl"
+alias kctx="kubectx"
+alias kns="kubens"
 alias tf="terraform"
 alias tmuxrc="vim ~/.tmux.conf"
 alias vimrc="vim ~/.vimrc"
@@ -47,3 +49,4 @@ function armclient() {
 
   curl -s -X $METHOD -H "Authorization: Bearer $ACCESS_TOKEN" "https://management.azure.com$URL" | jq
 }
+

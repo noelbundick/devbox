@@ -82,9 +82,18 @@
           apt:
             upgrade: yes
 
-        - name: Install argcomplete for Azure CLI
+        - name: Install global npm packages
+          npm:
+            name: '{{item}}'
+            global: yes
+          with_items:
+            - hexo-cli
+
+        - name: Install global python packages
           pip:
-            name: argcomplete
+            name: '{{item}}'
+          with_items:
+            - argcomplete           # for Azure CLI
 
         - name: Download & extract Go
           unarchive:
@@ -137,6 +146,11 @@
               with_items:
                 - { src: 'kubectx.zsh', dest: '_kubectx' }
                 - { src: 'kubens.zsh', dest: '_kubens' }
+
+        - name: Clone kube-ps1
+          git:
+            repo: https://github.com/jonmosco/kube-ps1.git
+            dest: /usr/local/src/kube-ps1
 
         - name: Install minikube and dependencies
           when: devbox_minikube is defined

@@ -101,7 +101,12 @@ export EDITOR="$VISUAL"
 # Pretty colors
 eval `dircolors ~/.dircolors`
 
-# Autocompletion
-source <(kubectl completion zsh)
-source /opt/az/bin/az.completion.sh &>/dev/null
 
+# -- kube-ps1 (kubernetes status prompt) --
+
+# Add kube-ps1 prompt. Has to be added in .zshrc because agnoster theme sets PROMPT
+# reminder: toggle with kubeon/kubeoff
+source /usr/local/src/kube-ps1/kube-ps1.sh
+export PROMPT='$(kube_ps1)'$PROMPT
+
+# -- end kube-ps1 --
