@@ -86,7 +86,7 @@ source $ZSH/oh-my-zsh.sh
 
 # Pretty stats at login
 # Do not show in tmux or VS Code terminal
-if [[ -f /usr/bin/neofetch && -z $TMUX && -z $VSCODE_CLI ]]; then neofetch; fi
+if [[ -f /usr/bin/neofetch && -z $TMUX && $TERM_PROGRAM != "vscode" ]]; then neofetch; fi
 
 # Remove % end of line prompts
 unsetopt prompt_cr prompt_sp
