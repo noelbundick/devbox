@@ -76,7 +76,7 @@
             - cmake
             - zip
             - unzip
-            - dotnet-sdk-2.0.2
+            - dotnet-sdk-2.1.4
 
         - name: Upgrade all packages
           apt:
