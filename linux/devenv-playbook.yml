@@ -21,6 +21,10 @@
           apt_repository:
             repo: deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main
 
+        - name: Add Microsoft key
+          apt_key:
+            url: https://packages.microsoft.com/keys/microsoft.asc
+            keyring: /etc/apt/trusted.gpg.d/microsoft.gpg
         - name: Add .NET to sources list
           apt_repository:
             repo: deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod xenial main
