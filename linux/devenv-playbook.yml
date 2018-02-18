@@ -104,7 +104,6 @@
             src: https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz
             dest: /usr/local
             remote_src: yes
-            creates: /usr/local/go/bin/go
 
         - name: Download dep (for Go dependencies)
           get_url:
@@ -129,7 +128,6 @@
                 src: https://github.com/ahmetb/kubectx/archive/v0.4.0.tar.gz
                 dest: /usr/local/src/kubectx
                 remote_src: yes
-                creates: /usr/local/src/kubectx/kubectx
                 extra_opts: ['--strip-components=1']
             - name: Copy tools to /usr/local/bin
               file:
@@ -137,7 +135,6 @@
                 src: '/usr/local/src/kubectx/{{item}}'
                 dest: '/usr/local/bin/{{item}}'
                 remote_src: yes
-                force: no
                 mode: 0755
               with_items:
                 - kubectx
@@ -179,13 +176,11 @@
                 src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.2-linux-amd64.tar.gz
                 dest: /usr/local/src/helm
                 remote_src: yes
-                creates: /usr/local/src/helm/linux-amd64/helm
             - name: Copy Helm to /usr/local/bin
               copy:
                 src: /usr/local/src/helm/linux-amd64/helm
                 dest: /usr/local/bin/helm
                 remote_src: yes
-                force: no
                 mode: 0755
 
         - name: Install terraform
@@ -193,7 +188,6 @@
             src: https://releases.hashicorp.com/terraform/0.11.1/terraform_0.11.1_linux_amd64.zip
             dest: /usr/local/bin
             remote_src: yes
-            creates: /usr/local/bin/terraform
             mode: 0755
 
         - name: Install acs-engine
@@ -207,14 +201,12 @@
                 src: https://github.com/Azure/acs-engine/releases/download/v0.9.3/acs-engine-v0.9.3-linux-amd64.tar.gz
                 dest: /usr/local/src/acs-engine
                 remote_src: yes
-                creates: /usr/local/src/acs-engine/acs-engine
                 extra_opts: ['--strip-components=1']
             - name: Copy acs-engine to /usr/local/bin
               copy:
                 src: /usr/local/src/acs-engine/acs-engine
                 dest: /usr/local/bin/acs-engine
                 remote_src: yes
-                force: no
                 mode: 0755
 
         - name: Install sfctl
@@ -226,7 +218,6 @@
             src: https://github.com/heptio/ark/releases/download/v0.6.0/ark-v0.6.0-linux-amd64.tar.gz
             dest: /usr/local/bin
             remote_src: yes
-            creates: /usr/local/bin/ark
 
         - name: Install Hugo
           block:
@@ -236,16 +227,14 @@
                 state: directory
             - name: Extract Hugo
               unarchive:
-                src: https://github.com/gohugoio/hugo/releases/download/v0.32.2/hugo_0.32.2_Linux-64bit.tar.gz
+                src: https://github.com/gohugoio/hugo/releases/download/v0.36.1/hugo_0.36.1_Linux-64bit.tar.gz
                 dest: /usr/local/src/hugo
                 remote_src: yes
-                creates: /usr/local/src/hugo/hugo
             - name: Copy Hugo to /usr/local/bin
               copy:
                 src: /usr/local/src/hugo/hugo
                 dest: /usr/local/bin/hugo
                 remote_src: yes
-                force: no
                 mode: 0755
 
         - name: Install Minecraft tools
@@ -297,7 +286,7 @@
         - name: Clone tmux plugin manager
           git:
             repo: https://github.com/tmux-plugins/tpm
-            dest: ~/.tmux/plugins/tpm 
+            dest: ~/.tmux/plugins/tpm
 
     - name: Vim setup
       block:
@@ -331,9 +320,6 @@
 
     - name: Run plugin installs
       block:
-        - name: Install tmux plugins
-          command: tmux run-shell /home/noel/.tmux/plugins/tpm/bindings/install_plugins
-          changed_when: false
         - name: Install vim plugins
           command: vim +PlugInstall +qall
           changed_when: false
