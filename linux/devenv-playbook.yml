@@ -239,8 +239,8 @@
                 src: https://github.com/gohugoio/hugo/releases/download/v0.32.2/hugo_0.32.2_Linux-64bit.tar.gz
                 dest: /usr/local/src/hugo
                 remote_src: yes
-                creates: /usr/local/src/hugo/ugo
-            - name: Copy hHugo to /usr/local/bin
+                creates: /usr/local/src/hugo/hugo
+            - name: Copy Hugo to /usr/local/bin
               copy:
                 src: /usr/local/src/hugo/hugo
                 dest: /usr/local/bin/hugo
