@@ -297,7 +297,7 @@
         - name: Clone tmux plugin manager
           git:
             repo: https://github.com/tmux-plugins/tpm
-            dest: ~/.tmux/plugins/tpm
+            dest: ~/.tmux/plugins/tpm 
 
     - name: Vim setup
       block:
@@ -309,9 +309,6 @@
           get_url:
             url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
             dest: ~/.vim/autoload/plug.vim
-        - name: Install vim plugins
-          command: vim +PlugInstall +qall
-          changed_when: false
 
     - name: Link dotfiles
       file:
@@ -331,6 +328,15 @@
         - .tmux.conf
         - .vimrc
         - .zshrc
+
+    - name: Run plugin installs
+      block:
+        - name: Install tmux plugins
+          command: tmux run-shell /home/noel/.tmux/plugins/tpm/bindings/install_plugins
+          changed_when: false
+        - name: Install vim plugins
+          command: vim +PlugInstall +qall
+          changed_when: false
 
     - name: Link VS Code settings
       block:

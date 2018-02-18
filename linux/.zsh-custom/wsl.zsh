@@ -11,7 +11,7 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
   # I should blog more often  
   function blog() {
     if type code > /dev/null; then 
-      pushd ~/code/noelbundick-hexo
+      pushd ~/code/noelbundick/noelbundick-hugo
       code . </dev/null &>/dev/null & disown
       popd
     fi
