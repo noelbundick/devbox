@@ -39,9 +39,22 @@ Exclusions
 
 * [Setup Linux environment](https://github.com/noelbundick/devbox/tree/master/linux)
 
+#### Docker with WSL
+
+Securely communicate with the Docker daemon from WSL [via npiperelay](https://blogs.technet.microsoft.com/virtualization/2017/12/08/wsl-interoperability-with-docker/)
+
+The flow looks like `docker` -> `/var/run/docker.sock` -> `socat` -> `stdout/stdin` -> `npiperelay` -> `\\.pipe\docker_engine` -> `dockerd`
+
+```code
+go get -d github.com/jstarks/npiperelay
+mkdir -p /mnt/c/tools
+GOOS=windows go build -o /mnt/c/tools/npiperelay.exe github.com/jstarks/npiperelay
+```
+
 ## Useful shortcuts
 
 * `Win+R` - Run a command / launch a program
 * `Win+Tab` - Show all windows, manage virtual desktops
 * `Ctrl+Win+Left/Right` - Switch virtual desktops
 * `Win+Arrow keys` - Snap windows
+
