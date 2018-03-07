@@ -55,3 +55,7 @@ function nginx-serve() {
   local PORT=${2:-8080}
   docker run -d -v $DIR:/usr/share/nginx/html -p $PORT:80 nginx
 }
+
+function scratch() {
+  code ~/scratch/`date +%Y-%m-%d`.md </dev/null &>/dev/null & disown
+}
