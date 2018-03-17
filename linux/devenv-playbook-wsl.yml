@@ -25,3 +25,10 @@
             remote_src: true
             owner: root
 
+        - name: Add wsl.conf
+          copy:
+            src: '~/.devbox/linux/wsl.conf'
+            dest: '/etc/wsl.conf'
+            remote_src: true
+            owner: root
+

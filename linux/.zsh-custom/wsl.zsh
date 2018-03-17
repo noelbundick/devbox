@@ -30,4 +30,7 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
     (sudo docker-relay &)
   fi
 
+  # Use Windows path for Go
+  export GOPATH=/mnt/c/code/go
+
 fi
