@@ -1,0 +1,34 @@
+---
+- name: Configure development environment
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Administrative setup actions
+      become: true
+      block:
+        - name: Add symlink to npiperelay
+          file:
+            state: link
+            src: '/mnt/c/tools/npiperelay.exe'
+            dest: '/usr/local/bin/npiperelay.exe'
+
+        - name: Install packages
+          apt:
+            name: '{{item}}'
+          with_items:
+            - socat
+
+        - name: Add WSL sudoers file
+          copy:
+            src: '~/.devbox/linux/wsl.sudoers'
+            dest: '/etc/sudoers.d/wsl'
+            remote_src: true
+            owner: root
+
+        - name: Add wsl.conf
+          copy:
+            src: '~/.devbox/linux/wsl.conf'
+            dest: '/etc/wsl.conf'
+            remote_src: true
+            owner: root
+

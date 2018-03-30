@@ -50,3 +50,12 @@ function armclient() {
   curl -s -X $METHOD -H "Authorization: Bearer $ACCESS_TOKEN" "https://management.azure.com$URL" | jq
 }
 
+function nginx-serve() {
+  local DIR=$(realpath $1)
+  local PORT=${2:-8080}
+  docker run -d -v $DIR:/usr/share/nginx/html -p $PORT:80 nginx
+}
+
+function scratch() {
+  code ~/scratch/`date +%Y-%m-%d`.md </dev/null &>/dev/null & disown
+}
