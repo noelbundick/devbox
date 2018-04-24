@@ -204,7 +204,7 @@
                 state: directory
             - name: Extract acs-engine
               unarchive:
-                src: https://github.com/Azure/acs-engine/releases/download/v0.13.1/acs-engine-v0.13.1-linux-amd64.tar.gz
+                src: https://github.com/Azure/acs-engine/releases/download/v0.15.1/acs-engine-v0.15.1-linux-amd64.tar.gz
                 dest: /usr/local/src/acs-engine
                 remote_src: yes
                 extra_opts: ['--strip-components=1']
