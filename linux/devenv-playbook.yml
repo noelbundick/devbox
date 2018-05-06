@@ -19,7 +19,7 @@
             keyserver: packages.microsoft.com
         - name: Add Azure CLI to sources list
           apt_repository:
-            repo: deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main
+            repo: deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ xenial main
 
         - name: Add Microsoft key
           apt_key:

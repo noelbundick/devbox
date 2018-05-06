@@ -33,4 +33,6 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
   # Use Windows path for Go
   export GOPATH=/mnt/c/code/go
 
+  # Run Linux containers by default
+  export DOCKER_DEFAULT_PLATFORM=linux
 fi
