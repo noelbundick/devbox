@@ -131,11 +131,23 @@
             - mcstatus
             - sfctl
 
-        - name: Download & extract Go
-          unarchive:
-            src: "https://dl.google.com/go/go{{versions.go}}.linux-amd64.tar.gz"
-            dest: /usr/local
-            remote_src: yes
+        - name: Register the current Go version (if any)
+          shell: "/usr/local/go/bin/go version | sed --expression='s/go version go\\(.*\\) linux\\/amd64/\\1/g'"
+          ignore_errors: yes
+          register: current_go
+          changed_when: false
+        - name: Install Go
+          when: current_go is failed or current_go.stdout != versions.go
+          block:
+            - name: Remove old installation of Go
+              file:
+                path: /usr/local/go
+                state: absent
+            - name: Download & extract Go
+              unarchive:
+                src: "https://dl.google.com/go/go{{versions.go}}.linux-amd64.tar.gz"
+                dest: /usr/local
+                remote_src: yes
 
         - name: Download docker-compose
           get_url:
