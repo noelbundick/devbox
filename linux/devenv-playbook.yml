@@ -2,7 +2,30 @@
 - name: Configure development environment
   hosts: localhost
   connection: local
+  vars:
+    devbox_repo: https://github.com/noelbundick/devbox
+    versions:
+      acs_engine: 0.17.0
+      ark: 0.7.1
+      dep: 0.4.1
+      docker_compose: 1.21.0
+      dotnet_sdk: 2.1.4
+      go: 1.10.2
+      helm: 2.8.1
+      hugo: 0.37
+      kubectl: 1.10.3
+      kubectx: 0.4.0
+      rcon_cli: 1.3
+      terraform: 0.11.3
   tasks:
+    - name: Set up devbox repo
+      block:
+        - name: Clone devbox repo
+          when: devbox_dev is undefined
+          git:
+            repo: "{{devbox_repo}}"
+            dest: ~/.devbox
+
     - name: Administrative setup actions
       become: true
       block:
@@ -47,6 +70,10 @@
           apt_repository:
             repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
 
+        - name: Add git repository
+          apt_repository:
+            repo: ppa:git-core/ppa
+
         - name: Add neofetch repository
           apt_repository:
             repo: ppa:dawidd0811/neofetch
@@ -61,26 +88,26 @@
             name: '{{item}}'
           with_items:
             - apt-transport-https
-            - ca-certificates
-            - curl
-            - software-properties-common
-            - jq
-            - yarn
             - azure-cli
-            - nodejs
-            - docker-ce
-            - git
-            - zsh
-            - neofetch
             - build-essential
-            - python-pip
-            - tmux
-            - vim
-            - python-pygments
+            - ca-certificates
             - cmake
-            - zip
+            - curl
+            - docker-ce
+            - "dotnet-sdk-{{versions.dotnet_sdk}}"
+            - git
+            - jq
+            - neofetch
+            - nodejs
+            - python-pip
+            - python-pygments
+            - software-properties-common
+            - tmux
             - unzip
-            - dotnet-sdk-2.1.4
+            - yarn
+            - vim
+            - zip
+            - zsh
 
         - name: Upgrade all packages
           apt:
@@ -93,35 +120,38 @@
             name: '{{item}}'
             global: yes
           with_items:
-            - hexo-cli
+            - typescript
+            - yo
 
         - name: Install global python packages
           pip:
             name: '{{item}}'
           with_items:
             - argcomplete           # for Azure CLI
+            - mcstatus
+            - sfctl
 
         - name: Download & extract Go
           unarchive:
-            src: https://dl.google.com/go/go1.10.linux-amd64.tar.gz
+            src: "https://dl.google.com/go/go{{versions.go}}.linux-amd64.tar.gz"
             dest: /usr/local
             remote_src: yes
 
         - name: Download docker-compose
           get_url:
-            url: https://github.com/docker/compose/releases/download/1.21.0/docker-compose-Linux-x86_64
+            url: "https://github.com/docker/compose/releases/download/{{versions.docker_compose}}/docker-compose-Linux-x86_64"
             dest: /usr/local/bin/docker-compose
             mode: 0755
 
         - name: Download dep (for Go dependencies)
           get_url:
-            url: https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64
+            url: "https://github.com/golang/dep/releases/download/v{{versions.dep}}/dep-linux-amd64"
             dest: /usr/local/bin/dep
             mode: 0755
 
         - name: Download kubectl
           get_url:
-            url: https://storage.googleapis.com/kubernetes-release/release/v1.9.39.39.39.39.39.39.39.39.3
+            url: "https://storage.googleapis.com/kubernetes-release/release/v{{versions.kubectl}}/bin/linux/amd64/kubectl"
             dest: /usr/local/bin/kubectl
             mode: 0755
 
@@ -133,7 +163,7 @@
                 state: directory
             - name: Download and extract kubectx
               unarchive:
-                src: https://github.com/ahmetb/kubectx/archive/v0.4.0.tar.gz
+                src: "https://github.com/ahmetb/kubectx/archive/v{{versions.kubectx}}.tar.gz"
                 dest: /usr/local/src/kubectx
                 remote_src: yes
                 extra_opts: ['--strip-components=1']
@@ -181,7 +211,7 @@
                 state: directory
             - name: Download and extract Helm
               unarchive:
-                src: https://storage.googleapis.com/kubernetes-helm/helm-v2.8.1-linux-amd64.tar.gz
+                src: "https://storage.googleapis.com/kubernetes-helm/helm-v{{versions.helm}}-linux-amd64.tar.gz"
                 dest: /usr/local/src/helm
                 remote_src: yes
             - name: Copy Helm to /usr/local/bin
@@ -193,7 +223,7 @@
 
         - name: Install terraform
           unarchive:
-            src: https://releases.hashicorp.com/terraform/0.11.3/terraform_0.11.3_linux_amd64.zip
+            src: "https://releases.hashicorp.com/terraform/{{versions.terraform}}/terraform_{{versions.terraform}}_linux_amd64.zip"
             dest: /usr/local/bin
             remote_src: yes
             mode: 0755
@@ -206,7 +236,7 @@
                 state: directory
             - name: Extract acs-engine
               unarchive:
-                src: https://github.com/Azure/acs-engine/releases/download/v0.15.1/acs-engine-v0.15.1-linux-amd64.tar.gz
+                src: "https://github.com/Azure/acs-engine/releases/download/v{{versions.acs_engine}}/acs-engine-v{{versions.acs_engine}}-linux-amd64.tar.gz"
                 dest: /usr/local/src/acs-engine
                 remote_src: yes
                 extra_opts: ['--strip-components=1']
@@ -217,13 +247,9 @@
                 remote_src: yes
                 mode: 0755
 
-        - name: Install sfctl
-          pip:
-            name: sfctl
-
         - name: Install Ark
           unarchive:
-            src: https://github.com/heptio/ark/releases/download/v0.7.1/ark-v0.7.1-linux-amd64.tar.gz
+            src: "https://github.com/heptio/ark/releases/download/v{{versions.ark}}/ark-v{{versions.ark}}-linux-amd64.tar.gz"
             dest: /usr/local/bin
             remote_src: yes
 
@@ -235,7 +261,7 @@
                 state: directory
             - name: Extract Hugo
               unarchive:
-                src: https://github.com/gohugoio/hugo/releases/download/v0.37/hugo_0.37_Linux-64bit.tar.gz
+                src: "https://github.com/gohugoio/hugo/releases/download/v{{versions.hugo}}/hugo_{{versions.hugo}}_Linux-64bit.tar.gz"
                 dest: /usr/local/src/hugo
                 remote_src: yes
             - name: Copy Hugo to /usr/local/bin
@@ -247,12 +273,9 @@
 
         - name: Install Minecraft tools
           block:
-            - name: Install mcstatus
-              pip:
-                name: mcstatus
             - name: Install rcon-cli
               get_url:
-                url: https://github.com/itzg/rcon-cli/releases/download/1.3/rcon-cli_linux_amd64
+                url: "https://github.com/itzg/rcon-cli/releases/download/{{versions.rcon_cli}}/rcon-cli_linux_amd64"
                 dest: /usr/local/bin/rcon-cli
                 mode: 0755
 
@@ -268,22 +291,6 @@
       git:
         repo: https://github.com/robbyrussell/oh-my-zsh
         dest: ~/.oh-my-zsh
-
-    - name: Set up devbox repo
-      block:
-        - name: Clone noelbundick/devbox
-          when: devbox_dev is undefined
-          git:
-            repo: https://github.com/noelbundick/devbox
-            dest: ~/.devbox
-        - name: Use ssh when pushing changes to origin
-          shell: |
-            if ! git remote -v | grep -q git@github.com; then
-              git remote set-url --push origin git@github.com:noelbundick/devbox.git
-            fi
-          changed_when: false
-          args:
-            chdir: ~/.devbox
 
     - name: Tmux setup
       block:
@@ -351,3 +358,4 @@
         owner: noel
         group: noel
         recurse: yes
+        follow: no
