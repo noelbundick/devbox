@@ -17,6 +17,9 @@ if which code-insiders > /dev/null; then
   alias code=code-insiders
 fi
 
+# Disable GPU for streaming
+alias code-nogpu="code --disable-gpu"
+
 # Remove all Docker containers
 function dnuke() {
   if read -q '?Are you sure (y/N)?'; then
@@ -57,5 +60,5 @@ function nginx-serve() {
 }
 
 function scratch() {
-  code ~/scratch/`date +%Y-%m-%d`.md </dev/null &>/dev/null & disown
+  (code ~/scratch/`date +%Y-%m-%d`.md </dev/null &>/dev/null &)
 }

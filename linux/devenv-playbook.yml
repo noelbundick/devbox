@@ -85,6 +85,8 @@
         - name: Upgrade all packages
           apt:
             upgrade: yes
+            autoclean: yes
+            autoremove: yes
 
         - name: Install global npm packages
           npm:
