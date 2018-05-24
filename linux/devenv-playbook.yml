@@ -234,6 +234,7 @@
           ignore_errors: yes
           register: current_helm_version
           changed_when: false
+          check_mode: no
         - name: Install Helm
           when: current_helm_version is failed or current_helm_version.stdout != versions.helm
           block:
@@ -260,6 +261,7 @@
           ignore_errors: yes
           register: current_terraform_version
           changed_when: false
+          check_mode: no
         - name: Install terraform
           when: current_terraform_version is failed or current_terraform_version.stdout != versions.terraform
           unarchive:
@@ -273,6 +275,7 @@
           ignore_errors: yes
           register: current_acs_engine_version
           changed_when: false
+          check_mode: no
         - name: Install acs-engine
           when: current_acs_engine_version is failed or current_acs_engine_version.stdout != versions.acs_engine
           block:
@@ -300,6 +303,7 @@
           ignore_errors: yes
           register: current_ark_version
           changed_when: false
+          check_mode: no
         - name: Install Ark
           when: current_ark_version is failed or current_ark_version.stdout != versions.ark
           unarchive:
@@ -313,6 +317,7 @@
           ignore_errors: yes
           register: current_hugo_version
           changed_when: false
+          check_mode: no
         - name: Install Hugo
           when: current_hugo_version is failed or current_hugo_version.stdout != versions.hugo
           block:
@@ -397,6 +402,21 @@
         - .tmux.conf
         - .vimrc
         - .zshrc
+
+    - name: Detect WSL
+      command: grep -q Microsoft /proc/sys/kernel/osrelease
+      register: is_wsl
+      ignore_errors: yes
+      changed_when: false
+      check_mode: no
+    - name: Link WSL-specific dotfiles
+      when: is_wsl.rc == 0
+      file:
+        state: link
+        src: '~/.devbox/wsl/{{item}}'
+        dest: '~/{{item}}'
+      with_items:
+        - .gitconfig
 
     - name: Run plugin installs
       block:
