@@ -20,8 +20,11 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
   unsetopt BG_NICE
 
   # Map folders on C: to my home folder
+  export WIN_USER=`cmd.exe /c echo %USERNAME% | sed --expression='s/\r//g'`
   ln -sfn /mnt/c/code ~/code
   ln -sfn /mnt/c/temp ~/temp
+  ln -sfn "/mnt/c/Users/$WIN_USER/Desktop" ~/desktop
+  ln -sfn "/mnt/c/Users/$WIN_USER/Downloads" ~/downloads
 
   # Fire up the socat <-> npiperelay for Docker on launch
   if [[ ! -a /var/run/docker.sock ]]; then

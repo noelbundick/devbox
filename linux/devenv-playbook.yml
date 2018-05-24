@@ -425,6 +425,7 @@
             name: '{{item}}'
           with_items:
             - socat
+        # TODO: automate compilation/download of npiperelay.exe
         - name: Setup npiperelay for docker
           file:
             state: link
