@@ -4,8 +4,6 @@
 if grep -q Microsoft /proc/sys/kernel/osrelease; then
 
   # Aliases
-  alias devbox-update-wsl="sudo ansible-playbook ~/.devbox/linux/devenv-playbook-wsl.yml"
-  alias dswitch="/mnt/c/Program \ Files/Docker/Docker/DockerCli.exe -SwitchDaemon"
   alias explorer="explorer.exe"
   alias minecraft-server="docker run -d --rm -p 25565:25565 -p 25575:25575 -e EULA=TRUE -e ONLINE_MODE=FALSE -v 'C:\\temp\\minecraftdata':/data itzg/minecraft-server"
 
