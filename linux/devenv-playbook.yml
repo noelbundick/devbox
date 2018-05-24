@@ -409,14 +409,44 @@
       ignore_errors: yes
       changed_when: false
       check_mode: no
-    - name: Link WSL-specific dotfiles
+    - name: Configure for WSL
       when: is_wsl.rc == 0
-      file:
-        state: link
-        src: '~/.devbox/wsl/{{item}}'
-        dest: '~/{{item}}'
-      with_items:
-        - .gitconfig
+      become: true
+      block:
+        - name: Link WSL-specific dotfiles
+          file:
+            state: link
+            src: '~/.devbox/wsl/{{item}}'
+            dest: '~/{{item}}'
+          with_items:
+            - .gitconfig
+        - name: Install packages
+          apt:
+            name: '{{item}}'
+          with_items:
+            - socat
+        - name: Setup npiperelay for docker
+          file:
+            state: link
+            src: /mnt/c/tools/npiperelay.exe
+            dest: /usr/local/bin/npiperelay.exe
+        - name: Symlink docker-relay
+          file:
+            state: link
+            src: ~/.devbox/wsl/docker-relay.sh
+            dest: /usr/local/bin/docker-relay
+        - name: Add WSL sudoers file
+          copy:
+            src: '~/.devbox/wsl/wsl.sudoers'
+            dest: '/etc/sudoers.d/wsl'
+            remote_src: true
+            owner: root
+        - name: Add wsl.conf
+          copy:
+            src: '~/.devbox/wsl/wsl.conf'
+            dest: '/etc/wsl.conf'
+            remote_src: true
+            owner: root
 
     - name: Run plugin installs
       block:
