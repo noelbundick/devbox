@@ -7,7 +7,9 @@ export ZSH=$HOME/.oh-my-zsh
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="agnoster"
+ZSH_THEME="powerlevel9k/powerlevel9k"
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir vcs)
+POWERLEVEL9K_DISABLE_RPROMPT=true
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -84,9 +86,9 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# Pretty stats at login
+# Pretty stats at login to Azure VMs
 # Do not show in tmux or VS Code terminal
-if [[ -f /usr/bin/neofetch && -z $TMUX && $TERM_PROGRAM != "vscode" ]]; then neofetch; fi
+if [[ -f /usr/bin/neofetch && -z $TMUX ]] && grep -sq unknown-245 /var/lib/dhcp/dhclient.eth0.leases; then neofetch; fi
 
 # Remove % end of line prompts
 unsetopt prompt_cr prompt_sp
@@ -100,7 +102,6 @@ export EDITOR="$VISUAL"
 
 # Pretty colors
 eval `dircolors ~/.dircolors`
-
 
 # -- kube-ps1 (kubernetes status prompt) --
 

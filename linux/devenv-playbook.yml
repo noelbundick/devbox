@@ -16,6 +16,7 @@
       kubectl: 1.10.3
       kubectx: 0.5.0
       terraform: 0.11.7
+    virtualenv: '~/.virtualenvs/default'
   tasks:
     - name: Set up devbox repo
       block:
@@ -116,13 +117,10 @@
             - typescript
             - yo
 
-        - name: Install global python packages
+        - name: Install virtualenv
           pip:
-            name: '{{item}}'
-          with_items:
-            - argcomplete           # for Azure CLI
-            - mcstatus
-            - sfctl
+            name: virtualenv
+            state: latest
 
         - name: Detect Go
           shell: "/usr/local/go/bin/go version | grep -Po 'go version go\\K[^ ]*'"
@@ -358,6 +356,11 @@
         repo: https://github.com/robbyrussell/oh-my-zsh
         dest: ~/.oh-my-zsh
 
+    - name: Install powerlevel9k
+      git:
+        repo: https://github.com/bhilburn/powerlevel9k.git
+        dest: ~/.oh-my-zsh/custom/themes/powerlevel9k
+
     - name: Tmux setup
       block:
         - name: Create ~/.tmux/plugins
@@ -466,6 +469,25 @@
             state: link
             src: '~/.devbox/dotfiles/settings.json'
             dest: '~/.config/Code/User/settings.json'
+
+    - name: Detect virtualenv
+      stat:
+        path: '{{ virtualenv }}'
+      register: current_virtualenv
+
+    - name: Create virtualenv
+      when: current_virtualenv is not defined
+      command: 'virtualenv {{ virtualenv }}'
+
+    - name: Install python packages
+      pip:
+        name: '{{item}}'
+        virtualenv: '{{ virtualenv }}'
+        state: latest
+      with_items:
+        - argcomplete
+        - mcstatus
+        - sfctl
 
     - name: Update ownership of home folder
       file:

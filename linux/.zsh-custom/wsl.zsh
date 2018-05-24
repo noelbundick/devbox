@@ -21,10 +21,21 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
 
   # Map folders on C: to my home folder
   export WIN_USER=`cmd.exe /c echo %USERNAME% | sed --expression='s/\r//g'`
-  ln -sfn /mnt/c/code ~/code
-  ln -sfn /mnt/c/temp ~/temp
-  ln -sfn "/mnt/c/Users/$WIN_USER/Desktop" ~/desktop
-  ln -sfn "/mnt/c/Users/$WIN_USER/Downloads" ~/downloads
+  if [[ ! -h ~/code ]]; then
+    ln -sfn /mnt/c/code ~/code
+  fi
+
+  if [[ ! -h ~/temp ]]; then
+    ln -sfn /mnt/c/temp ~/temp
+  fi
+
+  if [[ ! -h ~/code ]]; then
+    ln -sfn "/mnt/c/Users/$WIN_USER/Desktop" ~/desktop
+  fi
+
+  if [[ ! -h ~/code ]]; then
+    ln -sfn "/mnt/c/Users/$WIN_USER/Downloads" ~/downloads
+  fi
 
   # Fire up the socat <-> npiperelay for Docker on launch
   if [[ ! -a /var/run/docker.sock ]]; then
