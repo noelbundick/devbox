@@ -6,17 +6,16 @@
     devbox_repo: https://github.com/noelbundick/devbox
     versions:
       acs_engine: 0.17.0
-      ark: 0.7.1
+      ark: 0.8.1
       dep: 0.4.1
-      docker_compose: 1.21.0
+      docker_compose: 1.21.2
       dotnet_sdk: 2.1.4
       go: 1.10.2
-      helm: 2.8.1
-      hugo: 0.37
+      helm: 2.9.1
+      hugo: "0.37"
       kubectl: 1.10.3
       kubectx: 0.4.0
-      rcon_cli: 1.3
-      terraform: 0.11.3
+      terraform: 0.11.7
   tasks:
     - name: Set up devbox repo
       block:
@@ -42,7 +41,7 @@
             keyserver: packages.microsoft.com
         - name: Add Azure CLI to sources list
           apt_repository:
-            repo: deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ xenial main
+            repo: "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_distribution_release }} main"
 
         - name: Add Microsoft key
           apt_key:
@@ -50,7 +49,7 @@
             keyring: /etc/apt/trusted.gpg.d/microsoft.gpg
         - name: Add .NET to sources list
           apt_repository:
-            repo: deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-xenial-prod xenial main
+            repo: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_distribution_release }}-prod {{ ansible_distribution_release }} main"
 
         - name: Add Node key
           apt_key:
@@ -60,15 +59,15 @@
             repo: '{{item}}'
             filename: nodesource
           with_items:
-            - deb https://deb.nodesource.com/node_8.x xenial main
-            - deb-src https://deb.nodesource.com/node_8.x xenial main
+            - "deb https://deb.nodesource.com/node_8.x {{ ansible_distribution_release }} main"
+            - "deb-src https://deb.nodesource.com/node_8.x {{ ansible_distribution_release }} main"
 
         - name: Add Docker key
           apt_key:
             url: https://download.docker.com/linux/ubuntu/gpg
         - name: Add Docker to sources list
           apt_repository:
-            repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+            repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
 
         - name: Add git repository
           apt_repository:
@@ -131,8 +130,8 @@
             - mcstatus
             - sfctl
 
-        - name: Register the current Go version (if any)
-          shell: "/usr/local/go/bin/go version | sed --expression='s/go version go\\(.*\\) linux\\/amd64/\\1/g'"
+        - name: Detect Go
+          shell: "/usr/local/go/bin/go version | grep -Po 'go version go\\K[^ ]*'"
           ignore_errors: yes
           register: current_go
           changed_when: false
@@ -149,23 +148,44 @@
                 dest: /usr/local
                 remote_src: yes
 
-        - name: Download docker-compose
+        - name: Detect docker-compose
+          shell: "docker-compose version | grep -Po 'docker-compose version \\K[^,]*'"
+          ignore_errors: yes
+          register: current_docker_compose
+          changed_when: false
+        - name: Install docker-compose
+          when: current_docker_compose is failed or current_docker_compose.stdout != versions.docker_compose
           get_url:
             url: "https://github.com/docker/compose/releases/download/{{versions.docker_compose}}/docker-compose-Linux-x86_64"
             dest: /usr/local/bin/docker-compose
             mode: 0755
+            force: yes
 
-        - name: Download dep (for Go dependencies)
+        - name: Detect dep
+          shell: "dep version | grep -Po '^ version\\s+:\\s+v\\K.*'"
+          ignore_errors: yes
+          register: current_dep_version
+          changed_when: false
+        - name: Install dep
+          when: current_dep_version is failed or current_dep_version.stdout != versions.dep
           get_url:
             url: "https://github.com/golang/dep/releases/download/v{{versions.dep}}/dep-linux-amd64"
             dest: /usr/local/bin/dep
             mode: 0755
+            force: yes
 
-        - name: Download kubectl
+        - name: Detect kubectl
+          shell: "kubectl version --client | grep -Po 'GitVersion:\"v\\K[^\"]*'"
+          ignore_errors: yes
+          register: current_kubectl_version
+          changed_when: false
+        - name: Install kubectl
+          when: current_kubectl_version is failed or current_kubectl_version.stdout != versions.kubectl
           get_url:
             url: "https://storage.googleapis.com/kubernetes-release/release/v{{versions.kubectl}}/bin/linux/amd64/kubectl"
             dest: /usr/local/bin/kubectl
             mode: 0755
+            force: yes
 
         - name: Install kubectx
           block:
@@ -215,7 +235,13 @@
                 dest: /usr/local/bin/minikube
                 mode: 0755
 
+        - name: Detect Helm
+          shell: "helm version --client | grep -Po 'SemVer:\"v\\K[^\"]*'"
+          ignore_errors: yes
+          register: current_helm_version
+          changed_when: false
         - name: Install Helm
+          when: current_helm_version is failed or current_helm_version.stdout != versions.helm
           block:
             - name: Create staging directory for Helm
               file:
@@ -226,21 +252,35 @@
                 src: "https://storage.googleapis.com/kubernetes-helm/helm-v{{versions.helm}}-linux-amd64.tar.gz"
                 dest: /usr/local/src/helm
                 remote_src: yes
+                force: yes
             - name: Copy Helm to /usr/local/bin
               copy:
                 src: /usr/local/src/helm/linux-amd64/helm
                 dest: /usr/local/bin/helm
                 remote_src: yes
                 mode: 0755
+                force: yes
 
+        - name: Detect terraform
+          shell: "terraform version | grep -Po 'Terraform v\\K.*'"
+          ignore_errors: yes
+          register: current_terraform_version
+          changed_when: false
         - name: Install terraform
+          when: current_terraform_version is failed or current_terraform_version.stdout != versions.terraform
           unarchive:
             src: "https://releases.hashicorp.com/terraform/{{versions.terraform}}/terraform_{{versions.terraform}}_linux_amd64.zip"
             dest: /usr/local/bin
             remote_src: yes
             mode: 0755
 
+        - name: Detect acs-engine
+          shell: "acs-engine version | grep -Po 'Version: v\\K.*'"
+          ignore_errors: yes
+          register: current_acs_engine_version
+          changed_when: false
         - name: Install acs-engine
+          when: current_acs_engine_version is failed or current_acs_engine_version.stdout != versions.acs_engine
           block:
             - name: Create staging directory for acs-engine
               file:
@@ -252,20 +292,35 @@
                 dest: /usr/local/src/acs-engine
                 remote_src: yes
                 extra_opts: ['--strip-components=1']
+                force: yes
             - name: Copy acs-engine to /usr/local/bin
               copy:
                 src: /usr/local/src/acs-engine/acs-engine
                 dest: /usr/local/bin/acs-engine
                 remote_src: yes
                 mode: 0755
+                force: yes
 
+        - name: Detect ark
+          shell: "ark version | grep -Po 'Version: v\\K.*'"
+          ignore_errors: yes
+          register: current_ark_version
+          changed_when: false
         - name: Install Ark
+          when: current_ark_version is failed or current_ark_version.stdout != versions.ark
           unarchive:
             src: "https://github.com/heptio/ark/releases/download/v{{versions.ark}}/ark-v{{versions.ark}}-linux-amd64.tar.gz"
             dest: /usr/local/bin
             remote_src: yes
+            force: yes
 
+        - name: Detect Hugo
+          shell: "hugo version | grep -Po 'Hugo Static Site Generator v\\K[^ ]*'"
+          ignore_errors: yes
+          register: current_hugo_version
+          changed_when: false
         - name: Install Hugo
+          when: current_hugo_version is failed or current_hugo_version.stdout != versions.hugo
           block:
             - name: Create staging directory for Hugo
               file:
@@ -276,20 +331,20 @@
                 src: "https://github.com/gohugoio/hugo/releases/download/v{{versions.hugo}}/hugo_{{versions.hugo}}_Linux-64bit.tar.gz"
                 dest: /usr/local/src/hugo
                 remote_src: yes
+                force: yes
             - name: Copy Hugo to /usr/local/bin
               copy:
                 src: /usr/local/src/hugo/hugo
                 dest: /usr/local/bin/hugo
                 remote_src: yes
                 mode: 0755
+                force: yes
 
-        - name: Install Minecraft tools
-          block:
-            - name: Install rcon-cli
-              get_url:
-                url: "https://github.com/itzg/rcon-cli/releases/download/{{versions.rcon_cli}}/rcon-cli_linux_amd64"
-                dest: /usr/local/bin/rcon-cli
-                mode: 0755
+        - name: Install rcon-cli
+          get_url:
+            url: "https://github.com/itzg/rcon-cli/releases/download/1.4.0/rcon-cli_linux_amd64"
+            dest: /usr/local/bin/rcon-cli
+            mode: 0755
 
         - name: Set Zsh as the default shell
           user:
