@@ -60,7 +60,7 @@ inoremap [<CR> [<CR>]<Esc>ko
 inoremap (<CR> (<CR>)<Esc>ko
 
 " --- altercation/vim-colors/solarized ---
-colorscheme solarized   " use solarized color scheme
+silent! colorscheme solarized   " use solarized color scheme
 set background=dark     " use solarized dark
 
 " --- vim-airline/vim-airline ---

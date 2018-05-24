@@ -5,16 +5,16 @@
   vars:
     devbox_repo: https://github.com/noelbundick/devbox
     versions:
-      acs_engine: 0.17.0
+      acs_engine: 0.17.1
       ark: 0.8.1
       dep: 0.4.1
       docker_compose: 1.21.2
-      dotnet_sdk: 2.1.4
+      dotnet_sdk: 2.1.200
       go: 1.10.2
       helm: 2.9.1
-      hugo: "0.37"
+      hugo: 0.40.3
       kubectl: 1.10.3
-      kubectx: 0.4.0
+      kubectx: 0.5.0
       terraform: 0.11.7
   tasks:
     - name: Set up devbox repo
@@ -35,18 +35,13 @@
           apt_repository:
             repo: 'deb https://dl.yarnpkg.com/debian/ stable main'
 
-        - name: Add Azure CLI key
+        - name: Add Microsoft key
           apt_key:
-            id: 417A0893
-            keyserver: packages.microsoft.com
+            url: https://packages.microsoft.com/keys/microsoft.asc
         - name: Add Azure CLI to sources list
           apt_repository:
             repo: "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_distribution_release }} main"
 
-        - name: Add Microsoft key
-          apt_key:
-            url: https://packages.microsoft.com/keys/microsoft.asc
-            keyring: /etc/apt/trusted.gpg.d/microsoft.gpg
         - name: Add .NET to sources list
           apt_repository:
             repo: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_distribution_release }}-prod {{ ansible_distribution_release }} main"
@@ -67,15 +62,14 @@
             url: https://download.docker.com/linux/ubuntu/gpg
         - name: Add Docker to sources list
           apt_repository:
-            repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+            repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} edge"
 
-        - name: Add git repository
-          apt_repository:
-            repo: ppa:git-core/ppa
+        # Using a command because of some 'apt-key output should not be parsed' errors
+        - name: Add git ppa
+          command: add-apt-repository ppa:git-core/ppa
 
-        - name: Add neofetch repository
-          apt_repository:
-            repo: ppa:dawidd0811/neofetch
+        - name: Add neofetch ppa
+          command: add-apt-repository ppa:dawidd0811/neofetch
 
         - name: Update apt-cache
           apt:
@@ -342,7 +336,7 @@
 
         - name: Install rcon-cli
           get_url:
-            url: "https://github.com/itzg/rcon-cli/releases/download/1.4.0/rcon-cli_linux_amd64"
+            url: https://github.com/itzg/rcon-cli/releases/download/1.3/rcon-cli_linux_amd64
             dest: /usr/local/bin/rcon-cli
             mode: 0755
 
@@ -375,6 +369,10 @@
         - name: Create ~/.vim/autoload
           file:
             path: ~/.vim/autoload
+            state: directory
+        - name: Create ~/.vim/plugged
+          file:
+            path: ~/.vim/plugged
             state: directory
         - name: Clone plug.vim
           get_url:

@@ -25,7 +25,31 @@ Windows Registry Editor Version 5.00
 ;| cyan      | #2aa198 | ESC[1;36m | cyan      | LightAqua   | 03         | 0098a12a |
 ;| green     | #859900 | ESC[1;32m | green     | LightGreen  | 02         | 00009985 |
 
-[HKEY_CURRENT_USER\Console\C:_Program Files_WindowsApps_CanonicalGroupLimited.UbuntuonWindows_1604.2017.922.0_x64__79rhkp1fndgsc_ubuntu.exe]
+[HKEY_CURRENT_USER\Console\Ubuntu]
+"InsertMode"=dword:00000000
+"FontSize"=dword:00100008
+"FontFamily"=dword:00000036
+"FontWeight"=dword:00000190
+"FaceName"="DejaVu Sans Mono for Powerline"
+"ScreenColors"=dword:00000089
+"ColorTable00"=dword:00423607
+"ColorTable01"=dword:00d28b26
+"ColorTable02"=dword:00009985
+"ColorTable03"=dword:0098a12a
+"ColorTable04"=dword:002f32dc
+"ColorTable05"=dword:008236d3
+"ColorTable06"=dword:000089b5
+"ColorTable07"=dword:00e3f6fd
+"ColorTable08"=dword:00362b00
+"ColorTable09"=dword:00969483
+"ColorTable10"=dword:00756e58
+"ColorTable11"=dword:00a1a193
+"ColorTable12"=dword:00164bcb
+"ColorTable13"=dword:00c4716c
+"ColorTable14"=dword:00837b65
+"ColorTable15"=dword:00d5e8ee
+
+[HKEY_CURRENT_USER\Console\C:_Program Files_WindowsApps_CanonicalGroupLimited.UbuntuonWindows_1604.2018.510.0_x64__79rhkp1fndgsc_ubuntu.exe]
 "InsertMode"=dword:00000000
 "FontSize"=dword:00100008
 "FontFamily"=dword:00000036
