@@ -53,7 +53,7 @@ ZSH_CUSTOM=$HOME/.devbox/linux/.zsh-custom
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git docker encode64 tmux)
+plugins=(git docker encode64)
 
 source $ZSH/oh-my-zsh.sh
 

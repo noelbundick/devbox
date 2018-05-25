@@ -29,11 +29,11 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
     ln -sfn /mnt/c/temp ~/temp
   fi
 
-  if [[ ! -h ~/code ]]; then
+  if [[ ! -h ~/desktop ]]; then
     ln -sfn "/mnt/c/Users/$WIN_USER/Desktop" ~/desktop
   fi
 
-  if [[ ! -h ~/code ]]; then
+  if [[ ! -h ~/downloads ]]; then
     ln -sfn "/mnt/c/Users/$WIN_USER/Downloads" ~/downloads
   fi
 

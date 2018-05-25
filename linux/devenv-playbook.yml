@@ -359,7 +359,7 @@
     - name: Install powerlevel9k
       git:
         repo: https://github.com/bhilburn/powerlevel9k.git
-        dest: ~/.oh-my-zsh/custom/themes/powerlevel9k
+        dest: ~/.devbox/linux/.zsh-custom/themes/powerlevel9k
 
     - name: Tmux setup
       block:
@@ -456,6 +456,13 @@
       block:
         - name: Install vim plugins
           command: vim +PlugInstall +qall
+          changed_when: false
+        - name: Install tmux plugins
+          shell: |
+            tmux start-server
+            tmux new-session -d
+            ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+            tmux kill-server
           changed_when: false
 
     - name: Link VS Code settings
