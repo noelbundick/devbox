@@ -451,6 +451,15 @@
             dest: '/etc/wsl.conf'
             remote_src: true
             owner: root
+        - name: Detect Windows Defender exclusions
+          shell: /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -Command '$wslPaths = (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | % { Get-ItemProperty $_.PSPath}).BasePath; $exclusions = $(Get-MpPreference).ExclusionPath; ((diff $wslPaths $exclusions) | ? SideIndicator -eq "<=").InputObject'
+          changed_when: false
+          register: defender_exclusions
+        - name: Add the following to the Windows Defender exclusions list
+          set_fact:
+            dummy: value
+          with_items:
+            - '{{ defender_exclusions.stdout }}'
 
     - name: Run plugin installs
       block:

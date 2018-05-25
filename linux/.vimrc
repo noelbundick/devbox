@@ -30,7 +30,14 @@ set shiftwidth=2        " number of spaces to indent with <<, >>, and automatic 
 set expandtab           " use spaces over tabs
 filetype indent on      " load filetype-specific indent files
 
+" speed optimizations
+set ttyfast             " indicate a fast terminal connection
 set lazyredraw          " redraw only when needed
+
+" hacks until until https://github.com/vim/vim/issues/2584 is fixed
+" either one works for me
+"set cursorline&         " disable cursorline
+set re=1                " use old regex engine
 
 set foldenable          " enable code folding
 set foldlevelstart=10   " open most folds by default
