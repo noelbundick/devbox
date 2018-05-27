@@ -406,6 +406,12 @@
         - .vimrc
         - .zshrc
 
+    - name: Link azure-cli config
+      file:
+        state: link
+        src: '~/.devbox/dotfiles/azure.config'
+        dest: '~/.azure/config'
+
     - name: Detect WSL
       command: grep -q Microsoft /proc/sys/kernel/osrelease
       register: is_wsl
