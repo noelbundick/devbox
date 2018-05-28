@@ -19,24 +19,6 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
   # Don't 'nice' background jobs (https://github.com/Microsoft/BashOnWindows/issues/1838)
   unsetopt BG_NICE
 
-  # Map folders on C: to my home folder
-  export WIN_USER=`cmd.exe /c echo %USERNAME% | sed --expression='s/\r//g'`
-  if [[ ! -h ~/code ]]; then
-    ln -sfn /mnt/c/code ~/code
-  fi
-
-  if [[ ! -h ~/temp ]]; then
-    ln -sfn /mnt/c/temp ~/temp
-  fi
-
-  if [[ ! -h ~/desktop ]]; then
-    ln -sfn "/mnt/c/Users/$WIN_USER/Desktop" ~/desktop
-  fi
-
-  if [[ ! -h ~/downloads ]]; then
-    ln -sfn "/mnt/c/Users/$WIN_USER/Downloads" ~/downloads
-  fi
-
   # Fire up the socat <-> npiperelay for Docker on launch
   if [[ ! -a /var/run/docker.sock ]]; then
     (sudo docker-relay &)

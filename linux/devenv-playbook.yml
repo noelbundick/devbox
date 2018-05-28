@@ -430,6 +430,21 @@
             dest: '~/{{item}}'
           with_items:
             - .gitconfig
+        - name: Get Windows username
+          shell: /mnt/c/Windows/System32/cmd.exe /c echo %USERNAME% | sed --expression='s/\r//g'
+          register: win_user
+          changed_when: false
+          check_mode: no
+        - name: Symlink folders
+          file:
+            state: link
+            src: '{{item.value}}'
+            dest: '~/{{item.key}}'
+          with_dict:
+            code: '/mnt/c/code'
+            desktop: '/mnt/c/Users/{{win_user.stdout}}/Desktop'
+            downloads: '/mnt/c/Users/{{win_user.stdout}}/Downloads'
+            temp: '/mnt/c/temp'
         - name: Install packages
           apt:
             name: '{{item}}'
