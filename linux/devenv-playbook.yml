@@ -27,9 +27,36 @@
             repo: "{{devbox_repo}}"
             dest: ~/.devbox
 
+    - name: Detect WSL
+      command: grep -q Microsoft /proc/sys/kernel/osrelease
+      register: is_wsl
+      ignore_errors: yes
+      changed_when: false
+      check_mode: no
+
     - name: Administrative setup actions
       become: true
       block:
+
+        # Adapted from https://github.com/Microsoft/WSL/issues/143#issuecomment-209072634
+        - name: Prevent services from starting under WSL
+          when: is_wsl.rc == 0
+          block:
+            - name: Set policy-rc.d
+              copy:
+                dest: /usr/sbin/policy-rc.d
+                mode: 0755
+                content: |
+                  #!/bin/sh
+                  exit 101
+            - name: Add a diversion
+              command: dpkg-divert --local --rename --add /sbin/initctl
+            - name: Link /sbin/initctl
+              file:
+                state: link
+                src: '/bin/true'
+                dest: '/sbin/initctl'
+
         - name: Add Yarn key
           apt_key:
             url: https://dl.yarnpkg.com/debian/pubkey.gpg
@@ -413,15 +440,8 @@
         src: '~/.devbox/dotfiles/azure.config'
         dest: '~/.azure/config'
 
-    - name: Detect WSL
-      command: grep -q Microsoft /proc/sys/kernel/osrelease
-      register: is_wsl
-      ignore_errors: yes
-      changed_when: false
-      check_mode: no
     - name: Configure for WSL
       when: is_wsl.rc == 0
-      become: true
       block:
         - name: Link WSL-specific dotfiles
           file:
