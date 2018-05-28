@@ -16,7 +16,8 @@
       kubectl: 1.10.3
       kubectx: 0.5.0
       terraform: 0.11.7
-    virtualenv: '~/.virtualenvs/default'
+    virtualenv_py2: '~/.virtualenvs/py2'
+    virtualenv_py3: '~/.virtualenvs/py3'
   tasks:
     - name: Set up devbox repo
       block:
@@ -492,19 +493,27 @@
             src: '~/.devbox/dotfiles/settings.json'
             dest: '~/.config/Code/User/settings.json'
 
-    - name: Detect virtualenv
+    - name: Detect Python 2
       stat:
-        path: '{{ virtualenv }}'
-      register: current_virtualenv
+        path: '{{ virtualenv_py2 }}'
+      register: current_py2
+    - name: Create Python 2 virtualenv
+      when: current_py2 is not defined
+      command: 'virtualenv {{ virtualenv_py2 }} -p 2.7.15'
 
-    - name: Create virtualenv
-      when: current_virtualenv is not defined
-      command: 'virtualenv {{ virtualenv }}'
+
+    - name: Detect Python 3
+      stat:
+        path: '{{ virtualenv_py3 }}'
+      register: current_py3
+    - name: Create Python 3 virtualenv
+      when: current_py3 is not defined
+      command: 'virtualenv {{ virtualenv_py3 }} -p 3.6.5'
 
     - name: Install python packages
       pip:
         name: '{{item}}'
-        virtualenv: '{{ virtualenv }}'
+        virtualenv: '{{ virtualenv_py3 }}'
         state: latest
       with_items:
         - argcomplete
