@@ -51,6 +51,17 @@ mkdir -p /mnt/c/tools
 GOOS=windows go build -o /mnt/c/tools/npiperelay.exe github.com/jstarks/npiperelay
 ```
 
+### Dynamic DNS w/ Cloudflare
+
+Copy `registerCloudflare.ps1` to `C:\tools\registerCloudflare.ps1`
+
+Create a Scheduled Task with the following Action
+
+```
+Program/script: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+-Command "& 'C:\tools\registerCloudflare.ps1' -Email 'user@example.com' -ApiKey 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' -Domain 'example.com' -Name 'myfriendlyname'"
+```
+
 ## Useful shortcuts
 
 * `Win+R` - Run a command / launch a program
