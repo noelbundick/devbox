@@ -20,6 +20,7 @@ POWERLEVEL9K_DISABLE_RPROMPT=true
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
+DISABLE_UPDATE_PROMPT=true
 
 # Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
@@ -85,10 +86,6 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# Pretty stats at login to Azure VMs
-# Do not show in tmux or VS Code terminal
-if [[ -f /usr/bin/neofetch && -z $TMUX ]] && grep -sq unknown-245 /var/lib/dhcp/dhclient.eth0.leases; then neofetch; fi
 
 # Remove % end of line prompts
 unsetopt prompt_cr prompt_sp
