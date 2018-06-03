@@ -60,7 +60,15 @@ function nginx-serve() {
 }
 
 function scratch() {
-  (code ~/scratch/`date +%Y-%m-%d`.md </dev/null &>/dev/null &)
+  local FILE=~/scratch/`date +%Y-%m-%d`.md
+
+  # Allow for a hook to transform the scratch file path (ex: under WSL)
+  type scratch-hook &>/dev/null
+  if [[ $? -eq 0 ]]; then
+    FILE=$(scratch-hook $FILE)
+  fi
+
+  (code $FILE </dev/null &>/dev/null &)
 }
 
 function web_search() {

@@ -29,4 +29,11 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
 
   # Run Linux containers by default
   export DOCKER_DEFAULT_PLATFORM=linux
+
+  # Convert the scratch path on Linux to a Windows path for VS Code
+  function scratch-hook() {
+    local FILE=$1
+    echo $(wslpath -w $(readlink -f $FILE) | sed -e 's/\\/\\\\\\\\/g')
+  }
+
 fi
