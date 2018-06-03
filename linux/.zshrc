@@ -8,10 +8,23 @@ export ZSH=$HOME/.oh-my-zsh
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 ZSH_THEME="powerlevel9k/powerlevel9k"
+
+# kube-ps1 (kubernetes status prompt)
+# reminder: toggle with kubeon/kubeoff
+source /usr/local/src/kube-ps1/kube-ps1.sh
+KUBE_PS1_PREFIX=""
+KUBE_PS1_SUFFIX=""
+KUBE_PS1_SYMBOL_ENABLE=false
+KUBE_PS1_DIVIDER=$'\u2388'
+
+POWERLEVEL9K_CUSTOM_KUBEPS1="kube_ps1"
+POWERLEVEL9K_CUSTOM_KUBEPS1_BACKGROUND="black"
+
+# powerlevel9k prompt
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir vcs)
-POWERLEVEL9K_DISABLE_RPROMPT=true
 POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
 POWERLEVEL9K_SHORTEN_STRATEGY="truncate_folders"
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(custom_kubeps1)
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -102,11 +115,3 @@ export EDITOR="$VISUAL"
 # Pretty colors
 eval `dircolors ~/.dircolors`
 
-# -- kube-ps1 (kubernetes status prompt) --
-
-# Add kube-ps1 prompt. Has to be added in .zshrc because agnoster theme sets PROMPT
-# reminder: toggle with kubeon/kubeoff
-source /usr/local/src/kube-ps1/kube-ps1.sh
-export PROMPT='$(kube_ps1)'$PROMPT
-
-# -- end kube-ps1 --

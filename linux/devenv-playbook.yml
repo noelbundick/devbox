@@ -429,6 +429,7 @@
         src: '~/.devbox/linux/{{item}}'
         dest: '~/{{item}}'
       with_items:
+        - .curlrc
         - .dircolors
         - .tmux.conf
         - .vimrc
@@ -439,6 +440,7 @@
         state: link
         src: '~/.devbox/dotfiles/azure.config'
         dest: '~/.azure/config'
+        force: yes
 
     - name: Configure for WSL
       when: is_wsl.rc == 0
