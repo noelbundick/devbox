@@ -123,6 +123,7 @@
             - nodejs
             - python-pip
             - python-pygments
+            - python3-distutils
             - software-properties-common
             - tmux
             - unzip
@@ -537,7 +538,7 @@
       register: current_py2
     - name: Create Python 2 virtualenv
       when: current_py2 is not defined
-      command: 'virtualenv {{ virtualenv_py2 }} -p 2.7.15'
+      command: 'virtualenv {{ virtualenv_py2 }} -p python2'
 
 
     - name: Detect Python 3
@@ -546,7 +547,7 @@
       register: current_py3
     - name: Create Python 3 virtualenv
       when: current_py3 is not defined
-      command: 'virtualenv {{ virtualenv_py3 }} -p 3.6.5'
+      command: 'virtualenv {{ virtualenv_py3 }} -p python3'
 
     - name: Install python packages
       pip:
