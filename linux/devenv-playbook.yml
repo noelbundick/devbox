@@ -124,6 +124,7 @@
             - python-pip
             - python-pygments
             - python3-distutils
+            - python3-venv
             - software-properties-common
             - tmux
             - unzip
