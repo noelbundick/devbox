@@ -10,7 +10,7 @@ function qr() {
 
 # Run the 'quick' image interactively
 function qri() {
-  docker run --rm quick $1
+  docker run --rm -it quick $1
 }
 
 # Build & run the current directory
