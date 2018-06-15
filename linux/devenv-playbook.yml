@@ -437,6 +437,10 @@
         - .vimrc
         - .zshrc
 
+    - name: Ensure ~/.azure
+      file:
+        state: directory
+        path: '~/.azure'
     - name: Link azure-cli config
       file:
         state: link
@@ -464,6 +468,7 @@
             state: link
             src: '{{item.value}}'
             dest: '~/{{item.key}}'
+            force: yes
           with_dict:
             code: '/mnt/c/code'
             desktop: '/mnt/c/Users/{{win_user.stdout}}/Desktop'
@@ -481,6 +486,7 @@
             state: link
             src: /mnt/c/tools/npiperelay.exe
             dest: /usr/local/bin/npiperelay.exe
+            force: yes
         - name: Symlink docker-relay
           file:
             state: link
