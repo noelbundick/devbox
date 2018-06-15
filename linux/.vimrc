@@ -9,6 +9,7 @@ Plug 'tpope/vim-vinegar'
 Plug 'altercation/vim-colors-solarized'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'hashivim/vim-terraform'
 
 call plug#end()
 " reminder - call :PlugInstall to install plugins!
@@ -29,7 +30,14 @@ set shiftwidth=2        " number of spaces to indent with <<, >>, and automatic 
 set expandtab           " use spaces over tabs
 filetype indent on      " load filetype-specific indent files
 
+" speed optimizations
+set ttyfast             " indicate a fast terminal connection
 set lazyredraw          " redraw only when needed
+
+" hacks until until https://github.com/vim/vim/issues/2584 is fixed
+" either one works for me
+"set cursorline&         " disable cursorline
+set re=1                " use old regex engine
 
 set foldenable          " enable code folding
 set foldlevelstart=10   " open most folds by default
@@ -42,9 +50,16 @@ set mouse=a             " enable the mouse
 autocmd FileType yaml setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 autocmd FileType zsh setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 
+" reminder - use :sp and :vsp to create splits
+" reminder - navigate splits with Ctrl+W, h/j/k/l
 set splitbelow          " open new :sp/:split panes below
 set splitright          " open new :vsp/:vsplit panes to the right
-" reminder - navigate panes with Ctrl+W, h/j/k/l
+
+" use ctrl+h/j/k/l for split navigation
+nnoremap <C-H> <C-W><C-H>
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
 
 " auto-insert pairing braces/brackets/etc when creating a block
 inoremap {<CR> {<CR>}<Esc>ko
@@ -52,7 +67,7 @@ inoremap [<CR> [<CR>]<Esc>ko
 inoremap (<CR> (<CR>)<Esc>ko
 
 " --- altercation/vim-colors/solarized ---
-colorscheme solarized   " use solarized color scheme
+silent! colorscheme solarized   " use solarized color scheme
 set background=dark     " use solarized dark
 
 " --- vim-airline/vim-airline ---
@@ -71,3 +86,9 @@ let g:airline#extensions#tabline#enabled=1
 let g:airline_theme='solarized'
 let g:airline_solarized_bg='dark'
 
+" --- hashivim/vim-terraform ---
+let g:terraform_align=1 " let vim-terraform handle indentation
+
+" enable code folding using spacebar
+let g:terraform_fold_sections=1
+let g:terraform_remap_spacebar=1

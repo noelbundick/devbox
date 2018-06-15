@@ -2,24 +2,78 @@
 - name: Configure development environment
   hosts: localhost
   connection: local
+  vars:
+    devbox_repo: https://github.com/noelbundick/devbox
+    versions:
+      acs_engine: 0.17.1
+      ark: 0.8.1
+      dep: 0.4.1
+      docker_compose: 1.21.2
+      dotnet_sdk: 2.1.200
+      go: 1.10.2
+      helm: 2.9.1
+      hugo: 0.40.3
+      kubectl: 1.10.3
+      kubectx: 0.5.0
+      terraform: 0.11.7
+    virtualenv_py2: '~/.virtualenvs/py2'
+    virtualenv_py3: '~/.virtualenvs/py3'
   tasks:
+    - name: Set up devbox repo
+      block:
+        - name: Clone devbox repo
+          when: devbox_dev is undefined
+          git:
+            repo: "{{devbox_repo}}"
+            dest: ~/.devbox
+
+    - name: Detect WSL
+      command: grep -q Microsoft /proc/sys/kernel/osrelease
+      register: is_wsl
+      ignore_errors: yes
+      changed_when: false
+      check_mode: no
+
     - name: Administrative setup actions
       become: true
       block:
+
+        # Adapted from https://github.com/Microsoft/WSL/issues/143#issuecomment-209072634
+        - name: Prevent services from starting under WSL
+          when: is_wsl.rc == 0
+          block:
+            - name: Set policy-rc.d
+              copy:
+                dest: /usr/sbin/policy-rc.d
+                mode: 0755
+                content: |
+                  #!/bin/sh
+                  exit 101
+            - name: Add a diversion
+              command: dpkg-divert --local --rename --add /sbin/initctl
+            - name: Link /sbin/initctl
+              file:
+                state: link
+                src: '/bin/true'
+                dest: '/sbin/initctl'
+
         - name: Add Yarn key
           apt_key:
             url: https://dl.yarnpkg.com/debian/pubkey.gpg
-        - name: Add Yarn repository
+        - name: Add Yarn to sources list
           apt_repository:
             repo: 'deb https://dl.yarnpkg.com/debian/ stable main'
 
-        - name: Add Azure CLI key
+        - name: Add Microsoft key
           apt_key:
-            id: 417A0893
-            keyserver: packages.microsoft.com
+            url: https://packages.microsoft.com/keys/microsoft.asc
         - name: Add Azure CLI to sources list
           apt_repository:
-            repo: deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main
+            repo: "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_distribution_release }} main"
+
+        - name: Add .NET to sources list
+          apt_repository:
+            repo: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_distribution_release }}-prod {{ ansible_distribution_release }} main"
 
         - name: Add Node key
           apt_key:
@@ -29,19 +83,22 @@
             repo: '{{item}}'
             filename: nodesource
           with_items:
-            - deb https://deb.nodesource.com/node_8.x xenial main
-            - deb-src https://deb.nodesource.com/node_8.x xenial main
+            - "deb https://deb.nodesource.com/node_8.x {{ ansible_distribution_release }} main"
+            - "deb-src https://deb.nodesource.com/node_8.x {{ ansible_distribution_release }} main"
 
         - name: Add Docker key
           apt_key:
             url: https://download.docker.com/linux/ubuntu/gpg
         - name: Add Docker to sources list
           apt_repository:
-            repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+            repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} edge"
 
-        - name: Add neofetch repository
-          apt_repository:
-            repo: ppa:dawidd0811/neofetch
+        # Using a command because of some 'apt-key output should not be parsed' errors
+        - name: Add git ppa
+          command: add-apt-repository ppa:git-core/ppa
+
+        - name: Add neofetch ppa
+          command: add-apt-repository ppa:dawidd0811/neofetch
 
         - name: Update apt-cache
           apt:
@@ -53,52 +110,161 @@
             name: '{{item}}'
           with_items:
             - apt-transport-https
-            - ca-certificates
-            - curl
-            - software-properties-common
-            - jq
-            - yarn
             - azure-cli
-            - nodejs
-            - docker-ce
-            - git
-            - zsh
-            - neofetch
             - build-essential
-            - python-pip
-            - tmux
-            - vim
-            - python-pygments
+            - ca-certificates
             - cmake
+            - curl
+            - docker-ce
+            - "dotnet-sdk-{{versions.dotnet_sdk}}"
+            - git
+            - jq
+            - neofetch
+            - nodejs
+            - python-pip
+            - python-pygments
+            - python3-distutils
+            - python3-venv
+            - software-properties-common
+            - tmux
+            - unzip
+            - yarn
+            - vim
+            - zip
+            - zsh
 
         - name: Upgrade all packages
           apt:
             upgrade: yes
+            autoclean: yes
+            autoremove: yes
 
-        - name: Install argcomplete for Azure CLI
+        - name: Install global npm packages
+          npm:
+            name: '{{item}}'
+            global: yes
+          with_items:
+            - typescript
+            - yo
+
+        - name: Install virtualenv
           pip:
-            name: argcomplete
+            name: virtualenv
+            state: latest
 
-        - name: Download & extract Go
-          unarchive:
-            src: https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz
-            dest: /usr/local
-            remote_src: yes
-            creates: /usr/local/go/bin/go
+        - name: Detect Go
+          shell: "/usr/local/go/bin/go version | grep -Po 'go version go\\K[^ ]*'"
+          ignore_errors: yes
+          register: current_go
+          changed_when: false
+        - name: Install Go
+          when: current_go is failed or current_go.stdout != versions.go
+          block:
+            - name: Remove old installation of Go
+              file:
+                path: /usr/local/go
+                state: absent
+            - name: Download & extract Go
+              unarchive:
+                src: "https://dl.google.com/go/go{{versions.go}}.linux-amd64.tar.gz"
+                dest: /usr/local
+                remote_src: yes
 
-        - name: Download dep (for Go dependencies)
+        - name: Detect docker-compose
+          shell: "docker-compose version | grep -Po 'docker-compose version \\K[^,]*'"
+          ignore_errors: yes
+          register: current_docker_compose
+          changed_when: false
+        - name: Install docker-compose
+          when: current_docker_compose is failed or current_docker_compose.stdout != versions.docker_compose
           get_url:
-            url: https://github.com/golang/dep/releases/download/v0.3.2/dep-linux-amd64
+            url: "https://github.com/docker/compose/releases/download/{{versions.docker_compose}}/docker-compose-Linux-x86_64"
+            dest: /usr/local/bin/docker-compose
+            mode: 0755
+            force: yes
+
+        - name: Detect dep
+          shell: "dep version | grep -Po '^ version\\s+:\\s+v\\K.*'"
+          ignore_errors: yes
+          register: current_dep_version
+          changed_when: false
+        - name: Install dep
+          when: current_dep_version is failed or current_dep_version.stdout != versions.dep
+          get_url:
+            url: "https://github.com/golang/dep/releases/download/v{{versions.dep}}/dep-linux-amd64"
             dest: /usr/local/bin/dep
             mode: 0755
+            force: yes
 
-        - name: Download kubectl
+        - name: Detect kubectl
+          shell: "kubectl version --client | grep -Po 'GitVersion:\"v\\K[^\"]*'"
+          ignore_errors: yes
+          register: current_kubectl_version
+          changed_when: false
+        - name: Install kubectl
+          when: current_kubectl_version is failed or current_kubectl_version.stdout != versions.kubectl
           get_url:
-            url: https://storage.googleapis.com/kubernetes-release/release/v1.8.1/bin/linux/amd64/kubectl
+            url: "https://storage.googleapis.com/kubernetes-release/release/v{{versions.kubectl}}/bin/linux/amd64/kubectl"
             dest: /usr/local/bin/kubectl
             mode: 0755
+            force: yes
 
+        - name: Install kubectx
+          block:
+            - name: Create staging directory for kubectx
+              file:
+                path: /usr/local/src/kubectx
+                state: directory
+            - name: Download and extract kubectx
+              unarchive:
+                src: "https://github.com/ahmetb/kubectx/archive/v{{versions.kubectx}}.tar.gz"
+                dest: /usr/local/src/kubectx
+                remote_src: yes
+                extra_opts: ['--strip-components=1']
+            - name: Copy tools to /usr/local/bin
+              file:
+                state: link
+                src: '/usr/local/src/kubectx/{{item}}'
+                dest: '/usr/local/bin/{{item}}'
+                remote_src: yes
+                mode: 0755
+              with_items:
+                - kubectx
+                - kubens
+            - name: Link completion scripts
+              file:
+                state: link
+                src: '/usr/local/src/kubectx/completion/{{item.src}}'
+                dest: '/usr/share/zsh/functions/Completion/{{item.dest}}'
+              with_items:
+                - { src: 'kubectx.zsh', dest: '_kubectx' }
+                - { src: 'kubens.zsh', dest: '_kubens' }
+
+        - name: Clone kube-ps1
+          git:
+            repo: https://github.com/jonmosco/kube-ps1.git
+            dest: /usr/local/src/kube-ps1
+
+        - name: Install minikube and dependencies
+          when: devbox_minikube is defined
+          block:
+            - name: Install virtualbox
+              apt:
+                name: virtualbox
+            - name: Install minikube
+              get_url:
+                url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+                dest: /usr/local/bin/minikube
+                mode: 0755
+
+        - name: Detect Helm
+          shell: "helm version --client | grep -Po 'SemVer:\"v\\K[^\"]*'"
+          ignore_errors: yes
+          register: current_helm_version
+          changed_when: false
+          check_mode: no
         - name: Install Helm
+          when: current_helm_version is failed or current_helm_version.stdout != versions.helm
           block:
             - name: Create staging directory for Helm
               file:
@@ -106,19 +272,40 @@
                 state: directory
             - name: Download and extract Helm
               unarchive:
-                src: https://storage.googleapis.com/kubernetes-helm/helm-v2.7.0-rc1-linux-amd64.tar.gz
+                src: "https://storage.googleapis.com/kubernetes-helm/helm-v{{versions.helm}}-linux-amd64.tar.gz"
                 dest: /usr/local/src/helm
                 remote_src: yes
-                creates: /usr/local/src/helm/linux-amd64/helm
+                force: yes
             - name: Copy Helm to /usr/local/bin
               copy:
                 src: /usr/local/src/helm/linux-amd64/helm
                 dest: /usr/local/bin/helm
                 remote_src: yes
-                force: no
                 mode: 0755
+                force: yes
 
+        - name: Detect terraform
+          shell: "terraform version | grep -Po 'Terraform v\\K.*'"
+          ignore_errors: yes
+          register: current_terraform_version
+          changed_when: false
+          check_mode: no
+        - name: Install terraform
+          when: current_terraform_version is failed or current_terraform_version.stdout != versions.terraform
+          unarchive:
+            src: "https://releases.hashicorp.com/terraform/{{versions.terraform}}/terraform_{{versions.terraform}}_linux_amd64.zip"
+            dest: /usr/local/bin
+            remote_src: yes
+            mode: 0755
+
+        - name: Detect acs-engine
+          shell: "acs-engine version | grep -Po 'Version: v\\K.*'"
+          ignore_errors: yes
+          register: current_acs_engine_version
+          changed_when: false
+          check_mode: no
         - name: Install acs-engine
+          when: current_acs_engine_version is failed or current_acs_engine_version.stdout != versions.acs_engine
           block:
             - name: Create staging directory for acs-engine
               file:
@@ -126,33 +313,65 @@
                 state: directory
             - name: Extract acs-engine
               unarchive:
-                src: https://github.com/Azure/acs-engine/releases/download/v0.9.3/acs-engine-v0.9.3-linux-amd64.tar.gz
+                src: "https://github.com/Azure/acs-engine/releases/download/v{{versions.acs_engine}}/acs-engine-v{{versions.acs_engine}}-linux-amd64.tar.gz"
                 dest: /usr/local/src/acs-engine
                 remote_src: yes
-                creates: /usr/local/src/acs-engine/acs-engine
                 extra_opts: ['--strip-components=1']
+                force: yes
             - name: Copy acs-engine to /usr/local/bin
               copy:
                 src: /usr/local/src/acs-engine/acs-engine
                 dest: /usr/local/bin/acs-engine
                 remote_src: yes
-                force: no
                 mode: 0755
+                force: yes
 
-        - name: Install sfctl
-          pip:
-            name: sfctl
+        - name: Detect ark
+          shell: "ark version | grep -Po 'Version: v\\K.*'"
+          ignore_errors: yes
+          register: current_ark_version
+          changed_when: false
+          check_mode: no
+        - name: Install Ark
+          when: current_ark_version is failed or current_ark_version.stdout != versions.ark
+          unarchive:
+            src: "https://github.com/heptio/ark/releases/download/v{{versions.ark}}/ark-v{{versions.ark}}-linux-amd64.tar.gz"
+            dest: /usr/local/bin
+            remote_src: yes
+            force: yes
 
-        - name: Install Minecraft tools
+        - name: Detect Hugo
+          shell: "hugo version | grep -Po 'Hugo Static Site Generator v\\K[^ ]*'"
+          ignore_errors: yes
+          register: current_hugo_version
+          changed_when: false
+          check_mode: no
+        - name: Install Hugo
+          when: current_hugo_version is failed or current_hugo_version.stdout != versions.hugo
           block:
-            - name: Install mcstatus
-              pip:
-                name: mcstatus
-            - name: Install rcon-cli
-              get_url:
-                url: https://github.com/itzg/rcon-cli/releases/download/1.3/rcon-cli_linux_amd64
-                dest: /usr/local/bin/rcon-cli
+            - name: Create staging directory for Hugo
+              file:
+                path: /usr/local/src/hugo
+                state: directory
+            - name: Extract Hugo
+              unarchive:
+                src: "https://github.com/gohugoio/hugo/releases/download/v{{versions.hugo}}/hugo_{{versions.hugo}}_Linux-64bit.tar.gz"
+                dest: /usr/local/src/hugo
+                remote_src: yes
+                force: yes
+            - name: Copy Hugo to /usr/local/bin
+              copy:
+                src: /usr/local/src/hugo/hugo
+                dest: /usr/local/bin/hugo
+                remote_src: yes
                 mode: 0755
+                force: yes
+
+        - name: Install rcon-cli
+          get_url:
+            url: https://github.com/itzg/rcon-cli/releases/download/1.3/rcon-cli_linux_amd64
+            dest: /usr/local/bin/rcon-cli
+            mode: 0755
 
         - name: Set Zsh as the default shell
           user:
@@ -167,21 +386,10 @@
         repo: https://github.com/robbyrussell/oh-my-zsh
         dest: ~/.oh-my-zsh
 
-    - name: Set up devbox repo
-      block:
-        - name: Clone noelbundick/devbox
-          when: devbox_dev is undefined
-          git:
-            repo: https://github.com/noelbundick/devbox
-            dest: ~/.devbox
-        - name: Use ssh when pushing changes to origin
-          shell: |
-            if ! git remote -v | grep -q git@github.com; then
-              git remote set-url --push origin git@github.com:noelbundick/devbox.git
-            fi
-          changed_when: false
-          args:
-            chdir: ~/.devbox
+    - name: Install powerlevel9k
+      git:
+        repo: https://github.com/bhilburn/powerlevel9k.git
+        dest: ~/.devbox/linux/.zsh-custom/themes/powerlevel9k
 
     - name: Tmux setup
       block:
@@ -200,13 +408,14 @@
           file:
             path: ~/.vim/autoload
             state: directory
+        - name: Create ~/.vim/plugged
+          file:
+            path: ~/.vim/plugged
+            state: directory
         - name: Clone plug.vim
           get_url:
             url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
             dest: ~/.vim/autoload/plug.vim
-        - name: Install vim plugins
-          command: vim +PlugInstall +qall
-          changed_when: false
 
     - name: Link dotfiles
       file:
@@ -222,11 +431,140 @@
         src: '~/.devbox/linux/{{item}}'
         dest: '~/{{item}}'
       with_items:
+        - .curlrc
         - .dircolors
         - .tmux.conf
         - .vimrc
-        - .zsh-custom
         - .zshrc
+
+    - name: Ensure ~/.azure
+      file:
+        state: directory
+        path: '~/.azure'
+    - name: Link azure-cli config
+      file:
+        state: link
+        src: '~/.devbox/dotfiles/azure.config'
+        dest: '~/.azure/config'
+        force: yes
+
+    - name: Configure for WSL
+      when: is_wsl.rc == 0
+      block:
+        - name: Link WSL-specific dotfiles
+          file:
+            state: link
+            src: '~/.devbox/wsl/{{item}}'
+            dest: '~/{{item}}'
+          with_items:
+            - .gitconfig
+        - name: Get Windows username
+          shell: /mnt/c/Windows/System32/cmd.exe /c echo %USERNAME% | sed --expression='s/\r//g'
+          register: win_user
+          changed_when: false
+          check_mode: no
+        - name: Symlink folders
+          file:
+            state: link
+            src: '{{item.value}}'
+            dest: '~/{{item.key}}'
+            force: yes
+          with_dict:
+            code: '/mnt/c/code'
+            desktop: '/mnt/c/Users/{{win_user.stdout}}/Desktop'
+            downloads: '/mnt/c/Users/{{win_user.stdout}}/Downloads'
+            scratch: '/mnt/c/code/scratch'
+            temp: '/mnt/c/temp'
+        - name: Install packages
+          apt:
+            name: '{{item}}'
+          with_items:
+            - socat
+        # TODO: automate compilation/download of npiperelay.exe
+        - name: Setup npiperelay for docker
+          file:
+            state: link
+            src: /mnt/c/tools/npiperelay.exe
+            dest: /usr/local/bin/npiperelay.exe
+            force: yes
+        - name: Symlink docker-relay
+          file:
+            state: link
+            src: ~/.devbox/wsl/docker-relay.sh
+            dest: /usr/local/bin/docker-relay
+        - name: Add WSL sudoers file
+          copy:
+            src: '~/.devbox/wsl/wsl.sudoers'
+            dest: '/etc/sudoers.d/wsl'
+            remote_src: true
+            owner: root
+        - name: Add wsl.conf
+          copy:
+            src: '~/.devbox/wsl/wsl.conf'
+            dest: '/etc/wsl.conf'
+            remote_src: true
+            owner: root
+        - name: Detect Windows Defender exclusions
+          shell: /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -Command '$wslPaths = (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | % { Get-ItemProperty $_.PSPath}).BasePath; $exclusions = $(Get-MpPreference).ExclusionPath; ((diff $wslPaths $exclusions) | ? SideIndicator -eq "<=").InputObject'
+          changed_when: false
+          register: defender_exclusions
+        - name: Add the following to the Windows Defender exclusions list
+          set_fact:
+            dummy: value
+          with_items:
+            - '{{ defender_exclusions.stdout }}'
+
+    - name: Run plugin installs
+      block:
+        - name: Install vim plugins
+          command: vim +PlugInstall +qall
+          changed_when: false
+        - name: Install tmux plugins
+          shell: |
+            tmux start-server
+            tmux new-session -d
+            ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+            tmux kill-server
+          changed_when: false
+
+    - name: Link VS Code settings
+      block:
+        - name: Ensure VS Code folder exists
+          file:
+            path: '~/.config/Code/User'
+            state: directory
+        - name: Link settings.json
+          file:
+            state: link
+            src: '~/.devbox/dotfiles/settings.json'
+            dest: '~/.config/Code/User/settings.json'
+
+    - name: Detect Python 2
+      stat:
+        path: '{{ virtualenv_py2 }}'
+      register: current_py2
+    - name: Create Python 2 virtualenv
+      when: not current_py2.stat.exists
+      command: 'virtualenv {{ virtualenv_py2 }} -p python2'
+
+
+    - name: Detect Python 3
+      stat:
+        path: '{{ virtualenv_py3 }}'
+      register: current_py3
+    - name: Create Python 3 virtualenv
+      when: not current_py3.stat.exists
+      command: 'virtualenv {{ virtualenv_py3 }} -p python3'
+
+    - name: Install python packages
+      pip:
+        name: '{{item}}'
+        virtualenv: '{{ virtualenv_py3 }}'
+        state: latest
+      with_items:
+        - argcomplete
+        - mcstatus
+        - sfctl
 
     - name: Update ownership of home folder
       file:
@@ -235,3 +573,4 @@
         owner: noel
         group: noel
         recurse: yes
+        follow: no

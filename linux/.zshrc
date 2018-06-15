@@ -7,7 +7,24 @@ export ZSH=$HOME/.oh-my-zsh
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="agnoster"
+ZSH_THEME="powerlevel9k/powerlevel9k"
+
+# kube-ps1 (kubernetes status prompt)
+# reminder: toggle with kubeon/kubeoff
+source /usr/local/src/kube-ps1/kube-ps1.sh
+KUBE_PS1_PREFIX=""
+KUBE_PS1_SUFFIX=""
+KUBE_PS1_SYMBOL_ENABLE=false
+KUBE_PS1_DIVIDER=$'\u2388'
+
+POWERLEVEL9K_CUSTOM_KUBEPS1="kube_ps1"
+POWERLEVEL9K_CUSTOM_KUBEPS1_BACKGROUND="black"
+
+# powerlevel9k prompt
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir vcs)
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
+POWERLEVEL9K_SHORTEN_STRATEGY="truncate_folders"
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(custom_kubeps1)
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -18,6 +35,7 @@ ZSH_THEME="agnoster"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
+DISABLE_UPDATE_PROMPT=true
 
 # Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
@@ -45,13 +63,13 @@ DISABLE_AUTO_TITLE="true"
 # HIST_STAMPS="mm/dd/yyyy"
 
 # Would you like to use another custom folder than $ZSH/custom?
-ZSH_CUSTOM=$HOME/.zsh-custom
+ZSH_CUSTOM=$HOME/.devbox/linux/.zsh-custom
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git docker encode64 tmux)
+plugins=(git docker encode64)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -84,9 +102,6 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# Pretty stats at login
-if [ -f /usr/bin/neofetch ]; then neofetch; fi
-
 # Remove % end of line prompts
 unsetopt prompt_cr prompt_sp
 
@@ -100,6 +115,3 @@ export EDITOR="$VISUAL"
 # Pretty colors
 eval `dircolors ~/.dircolors`
 
-# Autocompletion
-source <(kubectl completion zsh)
-source /opt/az/bin/az.completion.sh &>/dev/null

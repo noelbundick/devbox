@@ -4,14 +4,13 @@
 if grep -q Microsoft /proc/sys/kernel/osrelease; then
 
   # Aliases
-  alias dswitch="/mnt/c/Program \ Files/Docker/Docker/DockerCli.exe -SwitchDaemon"
   alias explorer="explorer.exe"
   alias minecraft-server="docker run -d --rm -p 25565:25565 -p 25575:25575 -e EULA=TRUE -e ONLINE_MODE=FALSE -v 'C:\\temp\\minecraftdata':/data itzg/minecraft-server"
 
-  # I should blog more often  
+  # I should blog more often
   function blog() {
-    if type code > /dev/null; then 
-      pushd ~/code/noelbundick-hexo
+    if type code > /dev/null; then
+      pushd ~/code/noelbundick/noelbundick-hugo
       code . </dev/null &>/dev/null & disown
       popd
     fi
@@ -20,12 +19,21 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
   # Don't 'nice' background jobs (https://github.com/Microsoft/BashOnWindows/issues/1838)
   unsetopt BG_NICE
 
-  # Map folders on C: to my home folder
-  ln -sfn /mnt/c/code ~/code
-  ln -sfn /mnt/c/temp ~/temp
+  # Fire up the socat <-> npiperelay for Docker on launch
+  if [[ ! -a /var/run/docker.sock ]]; then
+    (sudo docker-relay &)
+  fi
 
-  # On WSL, I want to connect to the daemon running on Windows
-  # TODO: Look into Windows named pipes from WSL instead of TCP (https://github.com/jstarks/npiperelay)
-  export DOCKER_HOST=tcp://127.0.0.1:2375
+  # Use Windows path for Go
+  export GOPATH=/mnt/c/code/go
+
+  # Run Linux containers by default
+  export DOCKER_DEFAULT_PLATFORM=linux
+
+  # Convert the scratch path on Linux to a Windows path for VS Code
+  function scratch-hook() {
+    local FILE=$1
+    echo $(wslpath -w $(readlink -f $FILE) | sed -e 's/\\/\\\\\\\\/g')
+  }
 
 fi

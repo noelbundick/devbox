@@ -39,9 +39,33 @@ Exclusions
 
 * [Setup Linux environment](https://github.com/noelbundick/devbox/tree/master/linux)
 
+#### Docker with WSL
+
+Securely communicate with the Docker daemon from WSL [via npiperelay](https://blogs.technet.microsoft.com/virtualization/2017/12/08/wsl-interoperability-with-docker/)
+
+The flow looks like `docker` -> `/var/run/docker.sock` -> `socat` -> `stdout/stdin` -> `npiperelay` -> `\\.pipe\docker_engine` -> `dockerd`
+
+```code
+go get -d github.com/jstarks/npiperelay
+mkdir -p /mnt/c/tools
+GOOS=windows go build -o /mnt/c/tools/npiperelay.exe github.com/jstarks/npiperelay
+```
+
+### Dynamic DNS w/ Cloudflare
+
+Copy `registerCloudflare.ps1` to `C:\tools\registerCloudflare.ps1`
+
+Create a Scheduled Task with the following Action
+
+```
+Program/script: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+-Command "& 'C:\tools\registerCloudflare.ps1' -Email 'user@example.com' -ApiKey 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' -Domain 'example.com' -Name 'myfriendlyname'"
+```
+
 ## Useful shortcuts
 
 * `Win+R` - Run a command / launch a program
 * `Win+Tab` - Show all windows, manage virtual desktops
 * `Ctrl+Win+Left/Right` - Switch virtual desktops
 * `Win+Arrow keys` - Snap windows
+
