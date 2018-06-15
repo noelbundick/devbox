@@ -544,7 +544,7 @@
         path: '{{ virtualenv_py2 }}'
       register: current_py2
     - name: Create Python 2 virtualenv
-      when: current_py2 is not defined
+      when: not current_py2.stat.exists
       command: 'virtualenv {{ virtualenv_py2 }} -p python2'
 
 
@@ -553,7 +553,7 @@
         path: '{{ virtualenv_py3 }}'
       register: current_py3
     - name: Create Python 3 virtualenv
-      when: current_py3 is not defined
+      when: not current_py3.stat.exists
       command: 'virtualenv {{ virtualenv_py3 }} -p python3'
 
     - name: Install python packages
