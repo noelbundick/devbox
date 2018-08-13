@@ -13,7 +13,7 @@
       go: 1.10.3
       helm: 2.9.1
       hugo: '0.46'
-      kubectl: 1.11.0
+      kubectl: 1.11.2
       kubectx: 0.5.1
       terraform: 0.11.7
     virtualenv_py2: '~/.virtualenvs/py2'
@@ -100,6 +100,9 @@
         - name: Add neofetch ppa
           command: add-apt-repository ppa:dawidd0811/neofetch
 
+        - name: Add deadsnakes ppa (Python)
+          command: add-apt-repository ppa:deadsnakes/ppa
+
         - name: Update apt-cache
           apt:
             update_cache: yes
@@ -125,6 +128,7 @@
             - python-pygments
             - python3-distutils
             - python3-venv
+            - python3.7
             - software-properties-common
             - tmux
             - unzip
