@@ -569,6 +569,7 @@
         - argcomplete
         - mcstatus
         - sfctl
+        - tox
 
     - name: Update ownership of home folder
       file:
