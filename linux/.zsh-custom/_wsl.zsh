@@ -17,7 +17,7 @@ if grep -q Microsoft /proc/sys/kernel/osrelease; then
   } >/dev/null
 
   function wslexpose() {
-    echo "@echo off\r\nwsl.exe $1" > /mnt/c/tools/wsl/$1.bat
+    echo "@echo off\r\nwsl.exe $1 %*" > /mnt/c/tools/wsl/$1.bat
   }
 
   # Don't 'nice' background jobs (https://github.com/Microsoft/BashOnWindows/issues/1838)
