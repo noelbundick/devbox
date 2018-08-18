@@ -1,7 +1,7 @@
 # These customizations are only added when running under Windows Subsystem for Linux
 # Under WSL, /proc/sys/kernel/osrelease looks something like: 4.4.0-43-Microsoft
 
-if grep -q Microsoft /proc/sys/kernel/osrelease; then
+if [ -d /proc/sys/kernel ] && grep -q Microsoft /proc/sys/kernel/osrelease; then
 
   # Aliases
   alias explorer="explorer.exe"

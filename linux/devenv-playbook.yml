@@ -57,91 +57,369 @@
                 src: '/bin/true'
                 dest: '/sbin/initctl'
 
-        - name: Add Yarn key
-          apt_key:
-            url: https://dl.yarnpkg.com/debian/pubkey.gpg
-        - name: Add Yarn to sources list
-          apt_repository:
-            repo: 'deb https://dl.yarnpkg.com/debian/ stable main'
+        # Linux-specific tasks
+        - name: Linux/debian setup
+          when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+          block:
+            - name: Add Yarn key
+              apt_key:
+                url: https://dl.yarnpkg.com/debian/pubkey.gpg
+            - name: Add Yarn to sources list
+              apt_repository:
+                repo: 'deb https://dl.yarnpkg.com/debian/ stable main'
 
-        - name: Add Microsoft key
-          apt_key:
-            url: https://packages.microsoft.com/keys/microsoft.asc
-        - name: Add Azure CLI to sources list
-          apt_repository:
-            repo: "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_distribution_release }} main"
+            - name: Add Microsoft key
+              apt_key:
+                url: https://packages.microsoft.com/keys/microsoft.asc
+            - name: Add Azure CLI to sources list
+              apt_repository:
+                repo: "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_distribution_release }} main"
+    
+            - name: Add .NET to sources list
+              apt_repository:
+                repo: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_distribution_release }}-prod {{ ansible_distribution_release }} main"
+    
+            - name: Add Node key
+              apt_key:
+                url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+            - name: Add Node to sources list
+              apt_repository:
+                repo: '{{item}}'
+                filename: nodesource
+              with_items:
+                - "deb https://deb.nodesource.com/node_8.x {{ ansible_distribution_release }} main"
+                - "deb-src https://deb.nodesource.com/node_8.x {{ ansible_distribution_release }} main"
+    
+            - name: Add Docker key
+              apt_key:
+                url: https://download.docker.com/linux/ubuntu/gpg
+            - name: Add Docker to sources list
+              apt_repository:
+                repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} edge"
+    
+            # Using a command because of some 'apt-key output should not be parsed' errors
+            - name: Add git ppa
+              command: add-apt-repository ppa:git-core/ppa
+    
+            - name: Add neofetch ppa
+              command: add-apt-repository ppa:dawidd0811/neofetch
+    
+            - name: Add deadsnakes ppa (Python)
+              command: add-apt-repository ppa:deadsnakes/ppa
+    
+            - name: Update apt-cache
+              apt:
+                update_cache: yes
+                cache_valid_time: 3600
+    
+            - name: Install packages
+              apt:
+                name: '{{item}}'
+              with_items:
+                - apt-transport-https
+                - azure-cli
+                - build-essential
+                - ca-certificates
+                - cmake
+                - curl
+                - docker-ce
+                - "dotnet-sdk-{{versions.dotnet_sdk}}"
+                - git
+                - jq
+                - neofetch
+                - nodejs
+                - python-pip
+                - python-pygments
+                - python3-distutils
+                - python3-venv
+                - python3.7
+                - software-properties-common
+                - tmux
+                - unzip
+                - yarn
+                - vim
+                - zip
+                - zsh
+    
+            - name: Upgrade all packages
+              apt:
+                upgrade: yes
+                autoclean: yes
+                autoremove: yes
 
-        - name: Add .NET to sources list
-          apt_repository:
-            repo: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_distribution_release }}-prod {{ ansible_distribution_release }} main"
+            - name: Detect Go
+              shell: "/usr/local/go/bin/go version | grep -Po 'go version go\\K[^ ]*'"
+              ignore_errors: yes
+              register: current_go
+              changed_when: false
+            - name: Install Go
+              when: current_go is failed or current_go.stdout != versions.go
+              block:
+                - name: Remove old installation of Go
+                  file:
+                    path: /usr/local/go
+                    state: absent
+                - name: Download & extract Go
+                  unarchive:
+                    src: "https://dl.google.com/go/go{{versions.go}}.linux-amd64.tar.gz"
+                    dest: /usr/local
+                    remote_src: yes
+    
+            - name: Detect docker-compose
+              shell: "docker-compose version | grep -Po 'docker-compose version \\K[^,]*'"
+              ignore_errors: yes
+              register: current_docker_compose
+              changed_when: false
+            - name: Install docker-compose
+              when: current_docker_compose is failed or current_docker_compose.stdout != versions.docker_compose
+              get_url:
+                url: "https://github.com/docker/compose/releases/download/{{versions.docker_compose}}/docker-compose-Linux-x86_64"
+                dest: /usr/local/bin/docker-compose
+                mode: 0755
+                force: yes
 
-        - name: Add Node key
-          apt_key:
-            url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-        - name: Add Node to sources list
-          apt_repository:
-            repo: '{{item}}'
-            filename: nodesource
-          with_items:
-            - "deb https://deb.nodesource.com/node_8.x {{ ansible_distribution_release }} main"
-            - "deb-src https://deb.nodesource.com/node_8.x {{ ansible_distribution_release }} main"
+            - name: Detect dep
+              shell: "dep version | grep -Po '^ version\\s+:\\s+v\\K.*'"
+              ignore_errors: yes
+              register: current_dep_version
+              changed_when: false
+            - name: Install dep
+              when: current_dep_version is failed or current_dep_version.stdout != versions.dep
+              get_url:
+                url: "https://github.com/golang/dep/releases/download/v{{versions.dep}}/dep-linux-amd64"
+                dest: /usr/local/bin/dep
+                mode: 0755
+                force: yes
+    
+            - name: Detect kubectl
+              shell: "kubectl version --client | grep -Po 'GitVersion:\"v\\K[^\"]*'"
+              ignore_errors: yes
+              register: current_kubectl_version
+              changed_when: false
+            - name: Install kubectl
+              when: current_kubectl_version is failed or current_kubectl_version.stdout != versions.kubectl
+              get_url:
+                url: "https://storage.googleapis.com/kubernetes-release/release/v{{versions.kubectl}}/bin/linux/amd64/kubectl"
+                dest: /usr/local/bin/kubectl
+                mode: 0755
+                force: yes
+    
+            - name: Install kubectx
+              block:
+                - name: Create staging directory for kubectx
+                  file:
+                    path: /usr/local/src/kubectx
+                    state: directory
+                - name: Download and extract kubectx
+                  unarchive:
+                    src: "https://github.com/ahmetb/kubectx/archive/v{{versions.kubectx}}.tar.gz"
+                    dest: /usr/local/src/kubectx
+                    remote_src: yes
+                    extra_opts: ['--strip-components=1']
+                - name: Copy tools to /usr/local/bin
+                  file:
+                    state: link
+                    src: '/usr/local/src/kubectx/{{item}}'
+                    dest: '/usr/local/bin/{{item}}'
+                    remote_src: yes
+                    mode: 0755
+                  with_items:
+                    - kubectx
+                    - kubens
+                - name: Link completion scripts
+                  file:
+                    state: link
+                    src: '/usr/local/src/kubectx/completion/{{item.src}}'
+                    dest: '/usr/share/zsh/functions/Completion/{{item.dest}}'
+                  with_items:
+                    - { src: 'kubectx.zsh', dest: '_kubectx' }
+                    - { src: 'kubens.zsh', dest: '_kubens' }
 
-        - name: Add Docker key
-          apt_key:
-            url: https://download.docker.com/linux/ubuntu/gpg
-        - name: Add Docker to sources list
-          apt_repository:
-            repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} edge"
+            - name: Clone kube-ps1
+              git:
+                repo: https://github.com/jonmosco/kube-ps1.git
+                dest: /usr/local/src/kube-ps1
 
-        # Using a command because of some 'apt-key output should not be parsed' errors
-        - name: Add git ppa
-          command: add-apt-repository ppa:git-core/ppa
 
-        - name: Add neofetch ppa
-          command: add-apt-repository ppa:dawidd0811/neofetch
+            - name: Install minikube and dependencies
+              when: devbox_minikube is defined
+              block:
+                - name: Install virtualbox
+                  apt:
+                    name: virtualbox
+                - name: Install minikube
+                  get_url:
+                    url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+                    dest: /usr/local/bin/minikube
+                    mode: 0755
+    
+            - name: Detect Helm
+              shell: "helm version --client | grep -Po 'SemVer:\"v\\K[^\"]*'"
+              ignore_errors: yes
+              register: current_helm_version
+              changed_when: false
+              check_mode: no
+            - name: Install Helm
+              when: current_helm_version is failed or current_helm_version.stdout != versions.helm
+              block:
+                - name: Create staging directory for Helm
+                  file:
+                    path: /usr/local/src/helm
+                    state: directory
+                - name: Download and extract Helm
+                  unarchive:
+                    src: "https://storage.googleapis.com/kubernetes-helm/helm-v{{versions.helm}}-linux-amd64.tar.gz"
+                    dest: /usr/local/src/helm
+                    remote_src: yes
+                    force: yes
+                - name: Copy Helm to /usr/local/bin
+                  copy:
+                    src: /usr/local/src/helm/linux-amd64/helm
+                    dest: /usr/local/bin/helm
+                    remote_src: yes
+                    mode: 0755
+                    force: yes
+    
+            - name: Detect terraform
+              shell: "terraform version | grep -Po 'Terraform v\\K.*'"
+              ignore_errors: yes
+              register: current_terraform_version
+              changed_when: false
+              check_mode: no
+            - name: Install terraform
+              when: current_terraform_version is failed or current_terraform_version.stdout != versions.terraform
+              unarchive:
+                src: "https://releases.hashicorp.com/terraform/{{versions.terraform}}/terraform_{{versions.terraform}}_linux_amd64.zip"
+                dest: /usr/local/bin
+                remote_src: yes
+                mode: 0755
 
-        - name: Add deadsnakes ppa (Python)
-          command: add-apt-repository ppa:deadsnakes/ppa
+            - name: Detect acs-engine
+              shell: "acs-engine version | grep -Po 'Version: v\\K.*'"
+              ignore_errors: yes
+              register: current_acs_engine_version
+              changed_when: false
+              check_mode: no
+            - name: Install acs-engine
+              when: current_acs_engine_version is failed or current_acs_engine_version.stdout != versions.acs_engine
+              block:
+                - name: Create staging directory for acs-engine
+                  file:
+                    path: /usr/local/src/acs-engine
+                    state: directory
+                - name: Extract acs-engine
+                  unarchive:
+                    src: "https://github.com/Azure/acs-engine/releases/download/v{{versions.acs_engine}}/acs-engine-v{{versions.acs_engine}}-linux-amd64.tar.gz"
+                    dest: /usr/local/src/acs-engine
+                    remote_src: yes
+                    extra_opts: ['--strip-components=1']
+                    force: yes
+                - name: Copy acs-engine to /usr/local/bin
+                  copy:
+                    src: /usr/local/src/acs-engine/acs-engine
+                    dest: /usr/local/bin/acs-engine
+                    remote_src: yes
+                    mode: 0755
+                    force: yes
+    
+            - name: Detect ark
+              shell: "ark version | grep -Po 'Version: v\\K.*'"
+              ignore_errors: yes
+              register: current_ark_version
+              changed_when: false
+              check_mode: no
+            - name: Install Ark
+              when: current_ark_version is failed or current_ark_version.stdout != versions.ark
+              unarchive:
+                src: "https://github.com/heptio/ark/releases/download/v{{versions.ark}}/ark-v{{versions.ark}}-linux-amd64.tar.gz"
+                dest: /usr/local/bin
+                remote_src: yes
+                force: yes
+    
+            - name: Detect Hugo
+              shell: "hugo version | grep -Po 'Hugo Static Site Generator v\\K[^ ]*'"
+              ignore_errors: yes
+              register: current_hugo_version
+              changed_when: false
+              check_mode: no
+            - name: Install Hugo
+              when: current_hugo_version is failed or current_hugo_version.stdout != versions.hugo
+              block:
+                - name: Create staging directory for Hugo
+                  file:
+                    path: /usr/local/src/hugo
+                    state: directory
+                - name: Extract Hugo
+                  unarchive:
+                    src: "https://github.com/gohugoio/hugo/releases/download/v{{versions.hugo}}/hugo_{{versions.hugo}}_Linux-64bit.tar.gz"
+                    dest: /usr/local/src/hugo
+                    remote_src: yes
+                    force: yes
+                - name: Copy Hugo to /usr/local/bin
+                  copy:
+                    src: /usr/local/src/hugo/hugo
+                    dest: /usr/local/bin/hugo
+                    remote_src: yes
+                    mode: 0755
+                    force: yes
+    
+            - name: Install rcon-cli
+              get_url:
+                url: https://github.com/itzg/rcon-cli/releases/download/1.3/rcon-cli_linux_amd64
+                dest: /usr/local/bin/rcon-cli
+                mode: 0755
+    
+            - name: Set Zsh as the default shell
+              user:
+                name: noel
+                shell: /bin/zsh
+                append: yes
+                groups:
+                  - docker
 
-        - name: Update apt-cache
-          apt:
-            update_cache: yes
-            cache_valid_time: 3600
+        - name: MacOS setup
+          when: ansible_distribution == "MacOSX"
+          block:
+            - name: Install formulae
+              become_user: noel
+              homebrew:
+                name: '{{item}}'
+              with_items:
+                - azure-cli
+                - dep
+                - docker-compose
+                - git
+                - go
+                - jq
+                - 'kube-ps1'
+                - kubectl
+                - kubectx
+                - kubernetes-helm
+                - node
+                - python@2
+                - python@3
+                - tmux
+                - vim
+                - zsh
+            - name: Install casks
+              become_user: noel
+              homebrew_cask:
+                name: '{{item}}'
+                accept_external_apps: True
+              with_items:
+                - brave
+                - docker
+                - google-chrome
+                - microsoft-teams
+                - minikube
+                - slack
+                - visual-studio-code
 
-        - name: Install packages
-          apt:
-            name: '{{item}}'
-          with_items:
-            - apt-transport-https
-            - azure-cli
-            - build-essential
-            - ca-certificates
-            - cmake
-            - curl
-            - docker-ce
-            - "dotnet-sdk-{{versions.dotnet_sdk}}"
-            - git
-            - jq
-            - neofetch
-            - nodejs
-            - python-pip
-            - python-pygments
-            - python3-distutils
-            - python3-venv
-            - python3.7
-            - software-properties-common
-            - tmux
-            - unzip
-            - yarn
-            - vim
-            - zip
-            - zsh
-
-        - name: Upgrade all packages
-          apt:
-            upgrade: yes
-            autoclean: yes
-            autoremove: yes
+            - name: Set Zsh as the default shell
+              user:
+                name: noel
+                shell: /usr/local/bin/zsh
+                append: yes
 
         - name: Install global npm packages
           npm:
@@ -155,235 +433,6 @@
           pip:
             name: virtualenv
             state: latest
-
-        - name: Detect Go
-          shell: "/usr/local/go/bin/go version | grep -Po 'go version go\\K[^ ]*'"
-          ignore_errors: yes
-          register: current_go
-          changed_when: false
-        - name: Install Go
-          when: current_go is failed or current_go.stdout != versions.go
-          block:
-            - name: Remove old installation of Go
-              file:
-                path: /usr/local/go
-                state: absent
-            - name: Download & extract Go
-              unarchive:
-                src: "https://dl.google.com/go/go{{versions.go}}.linux-amd64.tar.gz"
-                dest: /usr/local
-                remote_src: yes
-
-        - name: Detect docker-compose
-          shell: "docker-compose version | grep -Po 'docker-compose version \\K[^,]*'"
-          ignore_errors: yes
-          register: current_docker_compose
-          changed_when: false
-        - name: Install docker-compose
-          when: current_docker_compose is failed or current_docker_compose.stdout != versions.docker_compose
-          get_url:
-            url: "https://github.com/docker/compose/releases/download/{{versions.docker_compose}}/docker-compose-Linux-x86_64"
-            dest: /usr/local/bin/docker-compose
-            mode: 0755
-            force: yes
-
-        - name: Detect dep
-          shell: "dep version | grep -Po '^ version\\s+:\\s+v\\K.*'"
-          ignore_errors: yes
-          register: current_dep_version
-          changed_when: false
-        - name: Install dep
-          when: current_dep_version is failed or current_dep_version.stdout != versions.dep
-          get_url:
-            url: "https://github.com/golang/dep/releases/download/v{{versions.dep}}/dep-linux-amd64"
-            dest: /usr/local/bin/dep
-            mode: 0755
-            force: yes
-
-        - name: Detect kubectl
-          shell: "kubectl version --client | grep -Po 'GitVersion:\"v\\K[^\"]*'"
-          ignore_errors: yes
-          register: current_kubectl_version
-          changed_when: false
-        - name: Install kubectl
-          when: current_kubectl_version is failed or current_kubectl_version.stdout != versions.kubectl
-          get_url:
-            url: "https://storage.googleapis.com/kubernetes-release/release/v{{versions.kubectl}}/bin/linux/amd64/kubectl"
-            dest: /usr/local/bin/kubectl
-            mode: 0755
-            force: yes
-
-        - name: Install kubectx
-          block:
-            - name: Create staging directory for kubectx
-              file:
-                path: /usr/local/src/kubectx
-                state: directory
-            - name: Download and extract kubectx
-              unarchive:
-                src: "https://github.com/ahmetb/kubectx/archive/v{{versions.kubectx}}.tar.gz"
-                dest: /usr/local/src/kubectx
-                remote_src: yes
-                extra_opts: ['--strip-components=1']
-            - name: Copy tools to /usr/local/bin
-              file:
-                state: link
-                src: '/usr/local/src/kubectx/{{item}}'
-                dest: '/usr/local/bin/{{item}}'
-                remote_src: yes
-                mode: 0755
-              with_items:
-                - kubectx
-                - kubens
-            - name: Link completion scripts
-              file:
-                state: link
-                src: '/usr/local/src/kubectx/completion/{{item.src}}'
-                dest: '/usr/share/zsh/functions/Completion/{{item.dest}}'
-              with_items:
-                - { src: 'kubectx.zsh', dest: '_kubectx' }
-                - { src: 'kubens.zsh', dest: '_kubens' }
-
-        - name: Clone kube-ps1
-          git:
-            repo: https://github.com/jonmosco/kube-ps1.git
-            dest: /usr/local/src/kube-ps1
-
-        - name: Install minikube and dependencies
-          when: devbox_minikube is defined
-          block:
-            - name: Install virtualbox
-              apt:
-                name: virtualbox
-            - name: Install minikube
-              get_url:
-                url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-                dest: /usr/local/bin/minikube
-                mode: 0755
-
-        - name: Detect Helm
-          shell: "helm version --client | grep -Po 'SemVer:\"v\\K[^\"]*'"
-          ignore_errors: yes
-          register: current_helm_version
-          changed_when: false
-          check_mode: no
-        - name: Install Helm
-          when: current_helm_version is failed or current_helm_version.stdout != versions.helm
-          block:
-            - name: Create staging directory for Helm
-              file:
-                path: /usr/local/src/helm
-                state: directory
-            - name: Download and extract Helm
-              unarchive:
-                src: "https://storage.googleapis.com/kubernetes-helm/helm-v{{versions.helm}}-linux-amd64.tar.gz"
-                dest: /usr/local/src/helm
-                remote_src: yes
-                force: yes
-            - name: Copy Helm to /usr/local/bin
-              copy:
-                src: /usr/local/src/helm/linux-amd64/helm
-                dest: /usr/local/bin/helm
-                remote_src: yes
-                mode: 0755
-                force: yes
-
-        - name: Detect terraform
-          shell: "terraform version | grep -Po 'Terraform v\\K.*'"
-          ignore_errors: yes
-          register: current_terraform_version
-          changed_when: false
-          check_mode: no
-        - name: Install terraform
-          when: current_terraform_version is failed or current_terraform_version.stdout != versions.terraform
-          unarchive:
-            src: "https://releases.hashicorp.com/terraform/{{versions.terraform}}/terraform_{{versions.terraform}}_linux_amd64.zip"
-            dest: /usr/local/bin
-            remote_src: yes
-            mode: 0755
-
-        - name: Detect acs-engine
-          shell: "acs-engine version | grep -Po 'Version: v\\K.*'"
-          ignore_errors: yes
-          register: current_acs_engine_version
-          changed_when: false
-          check_mode: no
-        - name: Install acs-engine
-          when: current_acs_engine_version is failed or current_acs_engine_version.stdout != versions.acs_engine
-          block:
-            - name: Create staging directory for acs-engine
-              file:
-                path: /usr/local/src/acs-engine
-                state: directory
-            - name: Extract acs-engine
-              unarchive:
-                src: "https://github.com/Azure/acs-engine/releases/download/v{{versions.acs_engine}}/acs-engine-v{{versions.acs_engine}}-linux-amd64.tar.gz"
-                dest: /usr/local/src/acs-engine
-                remote_src: yes
-                extra_opts: ['--strip-components=1']
-                force: yes
-            - name: Copy acs-engine to /usr/local/bin
-              copy:
-                src: /usr/local/src/acs-engine/acs-engine
-                dest: /usr/local/bin/acs-engine
-                remote_src: yes
-                mode: 0755
-                force: yes
-
-        - name: Detect ark
-          shell: "ark version | grep -Po 'Version: v\\K.*'"
-          ignore_errors: yes
-          register: current_ark_version
-          changed_when: false
-          check_mode: no
-        - name: Install Ark
-          when: current_ark_version is failed or current_ark_version.stdout != versions.ark
-          unarchive:
-            src: "https://github.com/heptio/ark/releases/download/v{{versions.ark}}/ark-v{{versions.ark}}-linux-amd64.tar.gz"
-            dest: /usr/local/bin
-            remote_src: yes
-            force: yes
-
-        - name: Detect Hugo
-          shell: "hugo version | grep -Po 'Hugo Static Site Generator v\\K[^ ]*'"
-          ignore_errors: yes
-          register: current_hugo_version
-          changed_when: false
-          check_mode: no
-        - name: Install Hugo
-          when: current_hugo_version is failed or current_hugo_version.stdout != versions.hugo
-          block:
-            - name: Create staging directory for Hugo
-              file:
-                path: /usr/local/src/hugo
-                state: directory
-            - name: Extract Hugo
-              unarchive:
-                src: "https://github.com/gohugoio/hugo/releases/download/v{{versions.hugo}}/hugo_{{versions.hugo}}_Linux-64bit.tar.gz"
-                dest: /usr/local/src/hugo
-                remote_src: yes
-                force: yes
-            - name: Copy Hugo to /usr/local/bin
-              copy:
-                src: /usr/local/src/hugo/hugo
-                dest: /usr/local/bin/hugo
-                remote_src: yes
-                mode: 0755
-                force: yes
-
-        - name: Install rcon-cli
-          get_url:
-            url: https://github.com/itzg/rcon-cli/releases/download/1.3/rcon-cli_linux_amd64
-            dest: /usr/local/bin/rcon-cli
-            mode: 0755
-
-        - name: Set Zsh as the default shell
-          user:
-            name: noel
-            shell: /bin/zsh
-            append: yes
-            groups:
-              - docker
 
     - name: Cloning oh-my-zsh
       git:
@@ -572,10 +621,12 @@
         - tox
 
     - name: Update ownership of home folder
+      when: 
       file:
         dest: ~/
         state: directory
         owner: noel
-        group: noel
+        group: "{{ (ansible_distribution == 'MacOSX') | ternary('staff','noel') }}"
         recurse: yes
         follow: no
+

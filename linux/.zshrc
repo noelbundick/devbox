@@ -11,7 +11,11 @@ ZSH_THEME="powerlevel9k/powerlevel9k"
 
 # kube-ps1 (kubernetes status prompt)
 # reminder: toggle with kubeon/kubeoff
-source /usr/local/src/kube-ps1/kube-ps1.sh
+if [ -f /usr/local/opt/kube-ps1/share/kube-ps1.sh ]; then
+  source /usr/local/opt/kube-ps1/share/kube-ps1.sh
+else
+  source /usr/local/src/kube-ps1/kube-ps1.sh
+fi
 KUBE_PS1_PREFIX=""
 KUBE_PS1_SUFFIX=""
 KUBE_PS1_SYMBOL_ENABLE=false
@@ -113,5 +117,6 @@ export VISUAL=vim
 export EDITOR="$VISUAL"
 
 # Pretty colors
-eval `dircolors ~/.dircolors`
-
+if whence dircolors >/dev/null; then
+  eval `dircolors ~/.dircolors`
+fi
