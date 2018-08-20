@@ -409,6 +409,7 @@
               with_items:
                 - brave
                 - docker
+                - fork
                 - google-chrome
                 - microsoft-teams
                 - minikube
