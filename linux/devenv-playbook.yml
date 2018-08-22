@@ -409,6 +409,7 @@
               with_items:
                 - brave
                 - docker
+                - dotnet-sdk
                 - fork
                 - google-chrome
                 - microsoft-teams
