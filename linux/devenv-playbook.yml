@@ -128,6 +128,7 @@
                 - jq
                 - neofetch
                 - nodejs
+                - pandoc
                 - python-pip
                 - python-pygments
                 - python3-distutils
@@ -396,6 +397,7 @@
                 - kubectx
                 - kubernetes-helm
                 - node
+                - pandoc
                 - python@2
                 - python@3
                 - tmux
