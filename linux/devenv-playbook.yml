@@ -400,6 +400,7 @@
                 - pandoc
                 - python@2
                 - python@3
+                - sshfs
                 - tmux
                 - vim
                 - zsh
@@ -414,8 +415,11 @@
                 - dotnet-sdk
                 - fork
                 - google-chrome
+                - insomnia
                 - microsoft-teams
                 - minikube
+                - osxfuse
+                - pycharm-ce
                 - slack
                 - visual-studio-code
 
