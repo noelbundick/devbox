@@ -421,6 +421,7 @@
                 - osxfuse
                 - pycharm-ce
                 - slack
+                - visual-studio
                 - visual-studio-code
 
             - name: Set Zsh as the default shell
