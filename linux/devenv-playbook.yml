@@ -131,9 +131,7 @@
                 - pandoc
                 - python-pip
                 - python-pygments
-                - python3-distutils
                 - python3-venv
-                - python3.7
                 - software-properties-common
                 - tmux
                 - unzip
@@ -141,6 +139,14 @@
                 - vim
                 - zip
                 - zsh
+
+            - name: Install packages for Ubuntu 18.04
+              when: ansible_distribution_version == "18.04"
+              apt:
+                name: '{{item}}'
+              with_items:
+                - python3-distutils
+                - python3.7
     
             - name: Upgrade all packages
               apt:
