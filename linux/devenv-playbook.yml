@@ -5,17 +5,17 @@
   vars:
     devbox_repo: https://github.com/noelbundick/devbox
     versions:
-      acs_engine: 0.20.7
-      ark: 0.9.2
+      acs_engine: 0.25.3
+      ark: 0.10.0
       dep: 0.5.0
-      docker_compose: 1.22.0
+      docker_compose: 1.23.1
       dotnet_sdk: '2.1'
-      go: 1.10.3
-      helm: 2.9.1
+      go: 1.11.2
+      helm: 2.11.0
       hugo: '0.46'
       kubectl: 1.11.2
-      kubectx: 0.5.1
-      terraform: 0.11.7
+      kubectx: 0.6.1
+      terraform: 0.11.10
     virtualenv_py2: '~/.virtualenvs/py2'
     virtualenv_py3: '~/.virtualenvs/py3'
   tasks:
@@ -385,6 +385,7 @@
               become_user: noel
               homebrew:
                 name: '{{item}}'
+                upgrade_all: yes
               with_items:
                 - azure-cli
                 - dep
@@ -396,6 +397,7 @@
                 - kubectl
                 - kubectx
                 - kubernetes-helm
+                - maven
                 - node
                 - pandoc
                 - python@2
@@ -409,6 +411,7 @@
               homebrew_cask:
                 name: '{{item}}'
                 accept_external_apps: True
+                upgrade_all: yes
               with_items:
                 - brave
                 - docker
@@ -416,6 +419,7 @@
                 - fork
                 - google-chrome
                 - insomnia
+                - java
                 - microsoft-teams
                 - minikube
                 - osxfuse
