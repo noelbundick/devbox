@@ -1,0 +1,17 @@
+- name: Create ~/.tmux/plugins
+  file:
+    path: ~/.tmux/plugins
+    state: directory
+
+- name: Clone tmux plugin manager
+  git:
+    repo: https://github.com/tmux-plugins/tpm
+    dest: ~/.tmux/plugins/tpm
+
+- name: Install tmux plugins
+  shell: |
+    tmux start-server
+    tmux new-session -d
+    ~/.tmux/plugins/tpm/scripts/install_plugins.sh
+    tmux kill-server
+  changed_when: false

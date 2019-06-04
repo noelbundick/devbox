@@ -1,0 +1,20 @@
+- include_tasks: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: macosx.yml
+  when: ansible_os_family == 'MacOSX'
+
+- name: Check for pyenv
+  stat:
+    path: ~/.pyenv
+  register: pyenv
+
+- name: Install pyenv
+  when: not pyenv.stat.exists
+  shell: curl https://pyenv.run | bash
+
+- name: Install {{ python_version }} via pyenv
+  shell: |
+    export PATH="/home/noel/.pyenv/bin:$PATH"
+    pyenv install -s {{ python_version }}
+    pyenv global {{ python_version }}

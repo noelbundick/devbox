@@ -1,8 +1,0 @@
-{
-    "git.confirmSync": false,
-    "editor.tabSize": 2,
-    "extensions.ignoreRecommendations": false,
-    "terminal.integrated.shell.windows": "C:\\Users\\noelb\\AppData\\Local\\Microsoft\\WindowsApps\\ubuntu.exe",
-    "terminal.integrated.fontFamily": "Ubuntu Mono derivative Powerline, Consolas, 'Courier New', monospace",
-    "explorer.confirmDragAndDrop": false
-}

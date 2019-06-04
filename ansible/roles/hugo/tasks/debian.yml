@@ -1,0 +1,30 @@
+- name: Detect Hugo
+  shell: "hugo version | grep -Po 'Hugo Static Site Generator v\\K[^ ]*'"
+  ignore_errors: true
+  register: current_hugo_version
+  changed_when: false
+  check_mode: false
+
+- name: Install Hugo
+  become: true
+  when: current_hugo_version is failed or current_hugo_version.stdout != hugo_version
+  block:
+  - name: Create staging directory for Hugo
+    file:
+      path: /usr/local/src/hugo
+      state: directory
+
+  - name: Extract Hugo
+    unarchive:
+      src: "https://github.com/gohugoio/hugo/releases/download/{{ hugo_version }}/hugo_{{ hugo_version[1:] }}_Linux-64bit.tar.gz"
+      dest: /usr/local/src/hugo
+      remote_src: true
+      force: true
+
+  - name: Copy Hugo to /usr/local/bin
+    copy:
+      src: /usr/local/src/hugo/hugo
+      dest: /usr/local/bin/hugo
+      remote_src: true
+      mode: 0755
+      force: true

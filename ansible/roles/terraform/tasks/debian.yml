@@ -1,0 +1,19 @@
+- become: true
+  apt:
+    name: unzip
+
+- name: Detect terraform
+  shell: "terraform version | grep -Po 'Terraform v\\K.*'"
+  ignore_errors: true
+  register: current_terraform_version
+  changed_when: false
+  check_mode: false
+
+- name: Install terraform
+  become: true
+  when: current_terraform_version is failed or current_terraform_version.stdout != terraform_version
+  unarchive:
+    src: "https://releases.hashicorp.com/terraform/{{terraform_version}}/terraform_{{terraform_version}}_linux_amd64.zip"
+    dest: /usr/local/bin
+    remote_src: true
+    mode: 0755

@@ -1,8 +1,0 @@
-{
-    "window.zoomLevel": 1,
-    "editor.tabSize": 2,
-    "zenMode.hideTabs": false,
-    "git.autofetch": true,
-    "terminal.integrated.fontFamily": "Ubuntu Mono derivative Powerline",
-    "extensions.ignoreRecommendations": false
-}

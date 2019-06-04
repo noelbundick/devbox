@@ -1,0 +1,48 @@
+- include_tasks: tmux.yml
+
+- include_tasks: vim.yml
+
+- name: Detect devbox repo existence
+  stat:
+    path: ~/.devbox
+  register: devbox
+
+- name: Clone devbox repo
+  when: not devbox.stat.exists
+  git:
+    repo: https://github.com/noelbundick/devbox
+    dest: ~/.devbox
+
+- name: Link dotfiles
+  file:
+    state: link
+    src: '{{ item }}'
+    dest: '~/{{ item | basename }}'
+    force: true
+  with_fileglob:
+    - '~/.devbox/dotfiles/.*'
+
+- name: Link nonstandard dotfiles
+  file:
+    state: link
+    src: '~/.devbox/dotfiles/{{item.value}}'
+    dest: '~/{{item.key}}'
+    force: true
+  with_dict:
+    .azure/config: .azure/config
+
+- name: Detect WSL
+  command: grep -q Microsoft /proc/sys/kernel/osrelease
+  register: is_wsl
+  ignore_errors: true
+  changed_when: false
+  check_mode: false
+
+- include_tasks: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: macosx.yml
+  when: ansible_os_family == 'MacOSX'
+
+- include_tasks: wsl.yml
+  when: is_wsl.rc == 0

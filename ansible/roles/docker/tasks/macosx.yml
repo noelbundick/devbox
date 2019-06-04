@@ -1,0 +1,5 @@
+- homebrew:
+    name: docker
+
+- homebrew:
+    name: docker-compose

@@ -1,0 +1,24 @@
+- when: hugo_version == 'latest'
+  block:
+  - name: Install github3.py
+    pip:
+      name: github3.py
+
+  - name: Get latest hugo version
+    github_release:
+      user: gohugoio
+      repo: hugo
+      action: latest_release
+    register: latest_hugo
+    changed_when: false
+    check_mode: false
+
+  - name: Set hugo version
+    set_fact:
+      hugo_version: "{{ latest_hugo.tag }}"
+
+- include_tasks: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: macosx.yml
+  when: ansible_os_family == 'MacOSX'

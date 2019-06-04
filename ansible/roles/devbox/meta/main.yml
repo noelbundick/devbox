@@ -1,0 +1,10 @@
+dependencies:
+- role: azure-cli
+- role: docker
+- role: dotnet
+- role: golang
+- role: hugo
+- role: k8s-tools
+- role: node
+- role: python
+- role: terraform

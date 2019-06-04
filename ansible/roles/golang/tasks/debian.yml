@@ -1,0 +1,26 @@
+- name: Detect Go
+  shell: "/usr/local/go/bin/go version | grep -Po 'go version go\\K[^ ]*'"
+  register: current_go
+  ignore_errors: true
+  changed_when: false
+  check_mode: false
+
+- when: go_version == 'latest'
+  block:
+  - name: Get latest Go version
+    shell: wget -qO- https://golang.org/dl/ | grep -oP 'https:\/\/dl\.google\.com\/go\/go\K([0-9\.]+)(?=\..*\.tar\.gz)' | head -n 1
+    register: latest_go
+    changed_when: false
+    check_mode: false
+
+  - name: Set Go version
+    set_fact:
+      go_version: "{{ latest_go.stdout }}"
+
+- name: "Install Go {{ go_version }}"
+  when: current_go is failed or current_go.stdout != go_version
+  become: true
+  unarchive:
+    src: "https://dl.google.com/go/go{{go_version}}.linux-amd64.tar.gz"
+    dest: /usr/local
+    remote_src: true

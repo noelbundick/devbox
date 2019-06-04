@@ -1,0 +1,14 @@
+- name: Detect azure-cli-extension-noelbundick
+  command: az extension show -n noelbundick --query version -o tsv
+  register: current_noelbundick_version
+  ignore_errors: true
+  changed_when: false
+  check_mode: false
+
+- name: Remove existing azure-cli-extension-noelbundick
+  when: current_noelbundick_version is success and current_noelbundick_version.stdout != version_noelbundick
+  command: az extension remove -n noelbundick
+
+- name: Install azure-cli-extension-noelbundick
+  when: current_noelbundick_version is failed or current_noelbundick_version.stdout != version_noelbundick
+  command: az extension add -y --source https://github.com/noelbundick/azure-cli-extension-noelbundick/releases/download/v{{ version_noelbundick }}/noelbundick-{{ version_noelbundick }}-py2.py3-none-any.whl

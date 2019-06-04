@@ -1,7 +1,6 @@
-# Mac
+# Mac OS setup
 
-## Quick setup
+## Terminal
 
-```bash
-curl https://raw.githubusercontent.com/noelbundick/devbox/master/macos/init.sh | sudo bash
-```
+* Get [DejaVu Sans Mono for Powerline](https://github.com/powerline/fonts/blob/master/DejaVuSansMono/DejaVu%20Sans%20Mono%20for%20Powerline.ttf)
+* Apply `Solarized Dark.terminal`

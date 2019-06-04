@@ -1,0 +1,18 @@
+- name: Create ~/.vim/autoload
+  file:
+    path: ~/.vim/autoload
+    state: directory
+
+- name: Create ~/.vim/plugged
+  file:
+    path: ~/.vim/plugged
+    state: directory
+
+- name: Clone plug.vim
+  get_url:
+    url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    dest: ~/.vim/autoload/plug.vim
+
+- name: Install vim plugins
+  command: vim +PlugInstall +qall
+  changed_when: false

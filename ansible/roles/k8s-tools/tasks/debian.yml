@@ -1,0 +1,49 @@
+##########
+# kubectl
+##########
+- name: Detect kubectl
+  shell: "kubectl version --client | grep -Po 'GitVersion:\"v\\K[^\"]*'"
+  ignore_errors: true
+  register: current_kubectl_version
+  changed_when: false
+
+- name: Install kubectl
+  become: true
+  when: current_kubectl_version is failed or current_kubectl_version.stdout != k8s_version
+  get_url:
+    url: "https://storage.googleapis.com/kubernetes-release/release/v{{k8s_version}}/bin/linux/amd64/kubectl"
+    dest: /usr/local/bin/kubectl
+    mode: 0755
+    force: true
+
+##########
+# Helm
+##########
+- name: Detect Helm
+  shell: "helm version --client | grep -Po 'SemVer:\"v\\K[^\"]*'"
+  ignore_errors: true
+  register: current_helm_version
+  changed_when: false
+  check_mode: false
+
+- name: Install Helm
+  become: true
+  when: current_helm_version is failed or current_helm_version.stdout != helm_version
+  block:
+  - name: Create staging directory for Helm
+    file:
+      path: /usr/local/src/helm
+      state: directory
+  - name: Download and extract Helm
+    unarchive:
+      src: "https://storage.googleapis.com/kubernetes-helm/helm-v{{helm_version}}-linux-amd64.tar.gz"
+      dest: /usr/local/src/helm
+      remote_src: true
+      force: true
+  - name: Copy Helm to /usr/local/bin
+    copy:
+      src: /usr/local/src/helm/linux-amd64/helm
+      dest: /usr/local/bin/helm
+      remote_src: true
+      mode: 0755
+      force: true

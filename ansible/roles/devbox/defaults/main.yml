@@ -1,0 +1,4 @@
+apt_packages:
+- jq
+- unzip
+- zip

@@ -1,2 +1,0 @@
-%docker ALL=(root) NOPASSWD: /usr/local/bin/docker-relay
-%docker ALL=(root) NOPASSWD: /usr/bin/socat

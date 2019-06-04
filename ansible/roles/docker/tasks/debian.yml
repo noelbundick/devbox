@@ -1,0 +1,48 @@
+- name: Add Docker key
+  become: true
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+
+- name: Add Docker to sources list
+  become: true
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} edge"
+
+- name: Install Docker
+  become: true
+  apt:
+    name: docker-ce
+
+- when: compose_version == 'latest'
+  block:
+  - name: Install github3.py
+    pip:
+      name: github3.py
+
+  - name: Get latest Docker Compose version
+    github_release:
+      user: docker
+      repo: compose
+      action: latest_release
+    register: latest_compose
+    changed_when: false
+    check_mode: false
+
+  - name: Set Compose version
+    set_fact:
+      compose_version: "{{ latest_compose.tag }}"
+
+- name: Detect docker-compose
+  shell: "docker-compose version | grep -Po 'docker-compose version \\K[^,]*'"
+  register: current_docker_compose
+  ignore_errors: true
+  changed_when: false
+
+- name: Install docker-compose
+  when: current_docker_compose is failed or current_docker_compose.stdout != compose_version
+  become: true
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{compose_version}}/docker-compose-Linux-x86_64"
+    dest: /usr/local/bin/docker-compose
+    mode: 0755
+    force: yes

@@ -1,0 +1,11 @@
+- become: true
+  block:
+  - name: Install packages
+    apt:
+      name: "{{ apt_packages }}"
+
+  - name: Upgrade all packages
+    apt:
+      upgrade: yes
+      autoclean: yes
+      autoremove: yes
