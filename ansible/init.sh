@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+# Clone devbox repo
+git clone https://github.com/noelbundick/devbox ~/.devbox
+
 # Install ansible
 export PATH="~/.local/bin:$PATH"
 python3 -m pip install ansible --user
