@@ -10,3 +10,6 @@
     . ~/.nvm/nvm.sh
     nvm install node
     nvm alias default node
+
+    BIN_DIR=$(dirname $(nvm which current))
+    echo "export PATH=\"$BIN_DIR:$PATH\"" > ~/.devbox/dotfiles/includes/__node.sh

@@ -16,6 +16,4 @@ python3 -m pip install ansible --user
 
 # Run playbook
 ansible-playbook -K ~/.devbox/ansible/devbox.yml
-
-# Launch shell for an immediately-useful environment
-exec $SHELL
+echo "Close and reopen your shell to get your new environment!"
