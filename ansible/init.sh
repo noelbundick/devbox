@@ -7,6 +7,7 @@ if [ ! -d ~/.devbox ]; then
 fi
 
 # Install pip
+sudo apt update
 sudo apt install -y python3-pip
 
 # Install ansible
