@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Clone devbox repo
-if [ ! -d "~/.devbox" ]; then
+if [ ! -d ~/.devbox ]; then
     git clone https://github.com/noelbundick/devbox ~/.devbox
 fi
 
