@@ -29,9 +29,12 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Activate includes
+# Activate includes that don't contain '__'
+# If ordering matters, name files with numbers
 for d in ~/.devbox/dotfiles/includes/* ; do
+  if [[ ! $d =~ __.*.sh$ ]]; then
     source "$d"
+  fi
 done
 
 # Set vim as the default editor

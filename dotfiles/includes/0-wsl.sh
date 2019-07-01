@@ -2,7 +2,7 @@ if [ -d /proc/sys/kernel ] && grep -q Microsoft /proc/sys/kernel/osrelease; then
 
   # Aliases
   alias explorer="explorer.exe"
-  
+
   # Use Windows path for Go
   export GOPATH=/mnt/c/code/go
 
