@@ -19,7 +19,7 @@
 
   - name: Set Terraform version
     set_fact:
-      terraform_version: "{{ latest_terraform.tag }}"
+      terraform_version: "{{ latest_terraform.tag[1:] }}"
 
 - name: Detect terraform
   shell: "terraform version | grep -Po 'Terraform v\\K.*'"
