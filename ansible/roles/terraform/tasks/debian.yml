@@ -2,6 +2,25 @@
   apt:
     name: unzip
 
+- when: terraform_version == 'latest'
+  block:
+  - name: Install github3.py
+    pip:
+      name: github3.py
+
+  - name: Get latest Terraform version
+    github_release:
+      user: hashicorp
+      repo: terraform
+      action: latest_release
+    register: latest_terraform
+    changed_when: false
+    check_mode: false
+
+  - name: Set Terraform version
+    set_fact:
+      terraform_version: "{{ latest_terraform.tag }}"
+
 - name: Detect terraform
   shell: "terraform version | grep -Po 'Terraform v\\K.*'"
   ignore_errors: true
