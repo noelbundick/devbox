@@ -7,4 +7,5 @@ dependencies:
 - role: k8s-tools
 - role: node
 - role: python
+- role: rust
 - role: terraform
