@@ -204,7 +204,7 @@
     "profiles" : 
     [
         {
-            "acrylicOpacity" : 0.85000002384185791,
+            "acrylicOpacity" : 1,
             "closeOnExit" : true,
             "colorScheme" : "Solarized Dark",
             "commandline" : "ubuntu1804",
