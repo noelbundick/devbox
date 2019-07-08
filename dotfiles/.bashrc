@@ -41,4 +41,7 @@ done
 export VISUAL=vim
 export EDITOR="$VISUAL"
 
-export PS1='\W$ '
+# Set prompt, per https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh
+export GIT_PS1_SHOWCOLORHINTS=true
+export GIT_PS1_SHOWDIRTYSTATE=true
+export PROMPT_COMMAND='__git_ps1 "\W" "\\\$ "'
