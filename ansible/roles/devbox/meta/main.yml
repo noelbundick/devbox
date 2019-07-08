@@ -4,6 +4,7 @@ dependencies:
 - role: dotnet
 - role: golang
 - role: hugo
+- role: java
 - role: k8s-tools
 - role: node
 - role: python

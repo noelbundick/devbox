@@ -1,0 +1,40 @@
+- name: Install Java
+  become: true
+  apt:
+    name: 
+    - default-jdk
+
+- when: maven_version == 'latest'
+  block:
+  - name: Get latest Maven version
+    shell: "git ls-remote --tags https://github.com/apache/maven.git | grep -Po 'maven-\\K(\\d).(\\d).(\\d)' | tail -1"
+    register: latest_maven
+    ignore_errors: true
+    changed_when: false
+
+  - name: Set Maven version
+    set_fact:
+      maven_version: "{{ latest_maven.stdout }}"
+
+- name: Detect Maven
+  shell: "mvn --version | grep -Po 'Apache Maven \\K(\\d).(\\d).(\\d)'"
+  register: current_maven
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Maven
+  when: current_maven is failed or current_maven.stdout != maven_version
+  become: true
+  block:
+  - name: "Install Maven {{ maven_version }}"
+    unarchive:
+      src: "https://www-us.apache.org/dist/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz"
+      dest: /opt
+      remote_src: true
+
+  - name: Link /opt/maven -> {{ maven_version }}
+    file:
+      state: link
+      src: '/opt/apache-maven-{{ maven_version }}'
+      dest: '/opt/maven'
+      force: true
