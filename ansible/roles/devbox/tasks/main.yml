@@ -11,6 +11,14 @@
   with_fileglob:
     - '~/.devbox/dotfiles/.*'
 
+- name: Create directories
+  file:
+    state: directory
+    path: '{{item}}'
+    force: true
+  with_items:
+    - '~/.azure'
+
 - name: Link nonstandard dotfiles
   file:
     state: link
