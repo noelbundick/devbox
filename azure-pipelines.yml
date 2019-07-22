@@ -1,5 +1,21 @@
+trigger:
+- master
+
 pool:
   vmImage: ubuntu-16.04
 
 steps:
-- bash: docker build -t devbox .
+- task: Docker@2
+  displayName: Login to Docker Hub
+  inputs:
+    command: login
+    containerRegistry: acanthamoeba
+
+- task: Docker@2
+  displayName: Build and push Docker image
+  inputs:
+    command: buildAndPush
+    repository: acanthamoeba/devbox
+    tags: |
+      latest
+      $(Build.BuildNumber)
