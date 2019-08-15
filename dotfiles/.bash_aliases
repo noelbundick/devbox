@@ -12,20 +12,20 @@ fi
 
 # Remove all Docker containers
 function dnuke() {
-  if read -q '?Are you sure (y/N)?'; then
-    echo # empty line
+  read -p "Are you sure (y/N)? " -n 1 -r
+  echo    # (optional) move to a new line
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
     docker rm --force $(docker ps -aq)
   fi
-  echo # empty line
 }
 
 # Remove all Docker images
 function dnukeimages() {
-  if read -q '?Are you sure (y/N)?'; then
-    echo # empty line
+  read -p '?Are you sure (y/N)?' -n 1 -r
+  echo # empty line
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
     docker rmi --force $(docker images -aq)
   fi
-  echo # empty line
 }
 
 # SSH agent with default key
