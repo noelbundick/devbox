@@ -41,7 +41,15 @@ done
 export VISUAL=vim
 export EDITOR="$VISUAL"
 
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+__venv_ps1() {
+  VENV_PREFIX=
+  if [ -n "$VIRTUAL_ENV" ]; then
+    VENV_PREFIX="(`basename \"$VIRTUAL_ENV\"`) | "
+  fi
+}
+
 # Set prompt, per https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh
 export GIT_PS1_SHOWCOLORHINTS=true
 export GIT_PS1_SHOWDIRTYSTATE=true
-export PROMPT_COMMAND='__git_ps1 "\W" "\\\$ "'
+export PROMPT_COMMAND='__venv_ps1; __git_ps1 "$VENV_PREFIX\W" "\\\$ "'
