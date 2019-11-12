@@ -11,7 +11,7 @@
     dest: "~/{{item.key}}"
     force: true
   with_dict:
-    wincode: "/mnt/c/wincode"
+    wincode: "/mnt/c/code"
     desktop: "/mnt/c/Users/{{win_user.stdout}}/Desktop"
     downloads: "/mnt/c/Users/{{win_user.stdout}}/Downloads"
     temp: "/mnt/c/temp"

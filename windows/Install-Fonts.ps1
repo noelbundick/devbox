@@ -24,6 +24,3 @@ Invoke-WebRequest `
   DejaVuMonoPowerline.ttf
 Install-Font .\DejaVuMonoPowerline.ttf
 Remove-Item .\DejaVuMonoPowerline.ttf
-
-# Set Ubuntu WSL colors to solarized dark
-reg import .\solarized_dark.reg

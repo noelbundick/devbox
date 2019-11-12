@@ -29,4 +29,4 @@ ansible-playbook -K ~/.devbox/ansible/devbox.yml
 * `/dotfiles`: Configuration for various apps for all platforms (should some of these go in os-specific folders? probably!)
 * `/macos`: Mac things
 * `/windows`: Windows things
-* `/wsl`: Some ill-advised disabling of Windows Defender and other WSL config
+* `/wsl`: WSL config

@@ -16,5 +16,6 @@
 - name: Install {{ python_version }} via pyenv
   shell: |
     export PATH="/home/{{ ansible_user_id }}/.pyenv/bin:$PATH"
+    pyenv update
     pyenv install -s {{ python_version }}
     pyenv global {{ python_version }}

@@ -29,7 +29,7 @@
     .azure/config: .azure/config
 
 - name: Detect WSL
-  command: grep -q Microsoft /proc/sys/kernel/osrelease
+  command: grep -iq microsoft /proc/sys/kernel/osrelease
   register: is_wsl
   ignore_errors: true
   changed_when: false
