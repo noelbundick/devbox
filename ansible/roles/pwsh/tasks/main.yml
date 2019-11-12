@@ -8,8 +8,7 @@
     apt_repository:
       repo: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_distribution_release }}-prod {{ ansible_distribution_release }} main"
 
-  - name: Install .NET SDK
+  - name: Install pwsh
     apt:
       name: 
-      - apt-transport-https
-      - dotnet-sdk-2.2
+      - powershell

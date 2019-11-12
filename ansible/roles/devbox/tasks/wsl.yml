@@ -11,10 +11,9 @@
     dest: "~/{{item.key}}"
     force: true
   with_dict:
-    code: "/mnt/c/code"
+    wincode: "/mnt/c/wincode"
     desktop: "/mnt/c/Users/{{win_user.stdout}}/Desktop"
     downloads: "/mnt/c/Users/{{win_user.stdout}}/Downloads"
-    scratch: "/mnt/c/code/scratch"
     temp: "/mnt/c/temp"
 
 - name: Add wsl.conf

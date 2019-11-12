@@ -1,0 +1,23 @@
+- when: dapr_version == 'latest'
+  block:
+  - name: Install HTTP tools
+    become: true
+    apt:
+      name:
+      - curl
+
+  - name: Get latest dapr version
+    shell: curl https://api.github.com/repos/dapr/cli/releases | jq -r '.[0].tag_name'
+    register: latest_dapr
+    changed_when: false
+    check_mode: false
+
+  - name: Set dapr version
+    set_fact:
+      dapr_version: "{{ latest_dapr.stdout }}"
+
+- include_tasks: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: macosx.yml
+  when: ansible_os_family == 'MacOSX'

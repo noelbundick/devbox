@@ -1,0 +1,31 @@
+- name: Detect dapr
+  shell: "dapr --version | { echo -n 'v'; grep -Po 'cli version: \\K[^ ]*'; }"
+  ignore_errors: true
+  register: current_dapr_version
+  changed_when: false
+  check_mode: false
+
+- name: Install dapr
+  become: true
+  when: current_dapr_version is failed or current_dapr_version.stdout != dapr_version
+  block:
+  - name: Create staging directory for dapr
+    file:
+      path: /usr/local/src/dapr
+      state: directory
+
+  - name: Extract dapr
+    unarchive:
+      src: "https://github.com/dapr/cli/releases/download/{{ dapr_version }}/dapr_linux_amd64.tar.gz"
+      dest: /usr/local/src/dapr
+      remote_src: true
+      force: true
+
+  - name: Copy dapr to /usr/local/bin
+    copy:
+      src: /usr/local/src/dapr/dapr
+      dest: /usr/local/bin/dapr
+      remote_src: true
+      mode: 0755
+      force: true
+

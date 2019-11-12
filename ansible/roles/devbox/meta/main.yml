@@ -1,5 +1,6 @@
 dependencies:
 - role: azure-cli
+- role: cloud-native
 - role: docker
 - role: dotnet
 - role: golang
@@ -7,6 +8,7 @@ dependencies:
 - role: java
 - role: k8s-tools
 - role: node
+- role: pwsh
 - role: python
 - role: rust
 - role: terraform

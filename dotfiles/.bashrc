@@ -49,7 +49,17 @@ __venv_ps1() {
   fi
 }
 
+dumb() {
+  unset PROMPT_COMMAND
+  export PS1='\W\$ '
+}
+
 # Set prompt, per https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh
-export GIT_PS1_SHOWCOLORHINTS=true
-export GIT_PS1_SHOWDIRTYSTATE=true
-export PROMPT_COMMAND='__venv_ps1; __git_ps1 "$VENV_PREFIX\W" "\\\$ "'
+smart() {
+  export GIT_PS1_SHOWCOLORHINTS=true
+  export GIT_PS1_SHOWDIRTYSTATE=true
+  export PROMPT_COMMAND='__venv_ps1; __git_ps1 "$VENV_PREFIX\W" "\\\$ "'
+}
+
+smart
+

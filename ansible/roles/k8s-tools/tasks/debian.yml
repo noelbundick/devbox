@@ -47,3 +47,21 @@
       remote_src: true
       mode: 0755
       force: true
+
+##########
+# kind
+##########
+- name: Detect kind
+  shell: "kind version"
+  ignore_errors: true
+  register: current_kind_version
+  changed_when: false
+
+- name: Install kind
+  become: true
+  when: current_kind_version is failed or current_kind_version.stdout != kind_version
+  get_url:
+    url: "https://github.com/kubernetes-sigs/kind/releases/download/{{kind_version}}/kind-linux-amd64"
+    dest: /usr/local/bin/kind
+    mode: 0755
+    force: true
