@@ -10,17 +10,18 @@
             "name": "Ubuntu-18.04",
             "source": "Windows.Terminal.Wsl",
             "colorScheme": "Solarized Dark",
-            "fontFace": "DejaVu Sans Mono for Powerline",
-            "fontSize": 10,
+            "fontFace" : "DejaVu Sans Mono for Powerline",
+            "fontSize" : 10,
             "useAcrylic": true,
-            "acrylicOpacity": 0.95
+            "acrylicOpacity": 0.95,
+            "startingDirectory": "//wsl$/Ubuntu-18.04/home/noel"
         },
         {
             "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
             "hidden": false,
             "name": "PowerShell Core",
             "source": "Windows.Terminal.PowershellCore",
-            "fontSize": 10,
+            "fontSize" : 10,
             "useAcrylic": true,
             "acrylicOpacity": 0.95
         },
@@ -31,7 +32,7 @@
             "source": "Windows.Terminal.Azure",
             "colorScheme": "One Half Dark",
             "fontFace": "DejaVu Sans Mono for Powerline",
-            "fontSize": 10,
+            "fontSize" : 10,
             "useAcrylic": true,
             "acrylicOpacity": 0.95
         },
