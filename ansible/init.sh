@@ -11,8 +11,9 @@ sudo apt-get update
 export DEBIAN_FRONTEND=noninteractive
 sudo -E apt-get -q --option "Dpkg::Options::=--force-confold" --assume-yes install libssl1.1
 
-# Install pip
+# Install/upgrade pip
 sudo apt install -y python3-pip
+sudo -H pip3 install --upgrade pip
 
 # Install ansible
 export PATH="~/.local/bin:$PATH"
