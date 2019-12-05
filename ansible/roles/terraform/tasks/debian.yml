@@ -7,6 +7,7 @@
   - name: Install github3.py
     pip:
       name: github3.py
+      extra_args: --user
 
   - name: Get latest Terraform version
     github_release:

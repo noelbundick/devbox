@@ -3,6 +3,7 @@
   - name: Install github3.py
     pip:
       name: github3.py
+      extra_args: --user
 
   - name: Get latest hugo version
     github_release:
