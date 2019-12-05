@@ -1,5 +1,5 @@
 - name: Detect dapr
-  shell: "dapr --version | { echo -n 'v'; grep -Po 'cli version: \\K[^ ]*'; }"
+  shell: "dapr --version | { echo -n 'v'; grep -Po 'CLI version: \\K[^ ]*'; }"
   ignore_errors: true
   register: current_dapr_version
   changed_when: false
