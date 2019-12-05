@@ -1,10 +1,11 @@
 - when: dapr_version == 'latest'
   block:
-  - name: Install HTTP tools
+  - name: Install tools to handle github prerelease info
     become: true
     apt:
       name:
       - curl
+      - jq
 
   - name: Get latest dapr version
     shell: curl https://api.github.com/repos/dapr/cli/releases | jq -r '.[0].tag_name'
