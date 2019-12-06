@@ -8,6 +8,13 @@ esac
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
+# configure history behavior
+shopt -s histappend
+HISTCONTROL=ignoreboth
+HISTFILESIZE=100000
+HISTSIZE=100000
+HISTIGNORE='ls:bg:fg:pwd:clear:history:[ \t]*'
+
 # enable color support of ls and also add handy aliases
 eval "$(dircolors -b ~/.dircolors)"
 alias ls='ls --color=auto'
@@ -50,7 +57,7 @@ __venv_ps1() {
 }
 
 dumb() {
-  unset PROMPT_COMMAND
+  export PROMPT_COMMAND="history -a;history -c;history -r;"
   export PS1='\W\$ '
 }
 
@@ -58,7 +65,7 @@ dumb() {
 smart() {
   export GIT_PS1_SHOWCOLORHINTS=true
   export GIT_PS1_SHOWDIRTYSTATE=true
-  export PROMPT_COMMAND='__venv_ps1; __git_ps1 "$VENV_PREFIX\W" "\\\$ "'
+  export PROMPT_COMMAND='history -a;history -c;history -r;__venv_ps1; __git_ps1 "$VENV_PREFIX\W" "\\\$ "'
 }
 
 smart
