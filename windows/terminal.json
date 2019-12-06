@@ -2,13 +2,14 @@
 // For documentation on these settings, see: https://aka.ms/terminal-documentation
 {
     "$schema": "https://aka.ms/terminal-profiles-schema",
-    "defaultProfile": "{c6eaf9f4-32a7-5fdc-b5cf-066e8a4b1e40}",
+    "defaultProfile": "{c6eaf9f4-9999-9999-9999-066e8a4b1e40}",
     "profiles": [
         {
-            "guid": "{c6eaf9f4-32a7-5fdc-b5cf-066e8a4b1e40}",
+            "guid": "{c6eaf9f4-9999-9999-9999-066e8a4b1e40}",
             "hidden": false,
             "name": "Ubuntu-18.04",
-            "source": "Windows.Terminal.Wsl",
+            "icon": "ms-appx:///ProfileIcons/{9acb9455-ca41-5af7-950f-6bca1bc9722f}.png",
+            "commandline": "wsl -d Ubuntu-18.04 /bin/bash",
             "colorScheme": "Solarized Dark",
             "fontFace" : "DejaVu Sans Mono for Powerline",
             "fontSize" : 10,
@@ -49,6 +50,12 @@
             "name": "Windows PowerShell",
             "commandline": "powershell.exe",
             "hidden": true
+        },
+        {
+            "guid": "{c6eaf9f4-32a7-5fdc-b5cf-066e8a4b1e40}",
+            "hidden": true,
+            "name": "Ubuntu-18.04",
+            "source": "Windows.Terminal.Wsl"
         },
         {
             "guid": "{570fcb8d-792c-5ac7-ab1f-5cfb2cdfdb99}",
