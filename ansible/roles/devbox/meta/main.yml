@@ -1,5 +1,6 @@
 dependencies:
 - role: azure-cli
+- role: azure-functions
 - role: cloud-native
 - role: docker
 - role: dotnet
