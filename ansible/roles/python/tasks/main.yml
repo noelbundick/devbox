@@ -19,8 +19,3 @@
     pyenv update
     pyenv install -s {{ python_version }}
     pyenv global {{ python_version }}
-
-- name: Install ansible
-  shell: |
-    eval "$(pyenv init - bash --no-rehash)"
-    python -m pip install ansible --user
