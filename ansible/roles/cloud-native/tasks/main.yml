@@ -17,6 +17,25 @@
     set_fact:
       dapr_version: "{{ latest_dapr.stdout }}"
 
+- when: porter_version == 'latest'
+  block:
+  - name: Install tools to handle github prerelease info
+    become: true
+    apt:
+      name:
+      - curl
+      - jq
+
+  - name: Get latest porter version
+    shell: curl https://api.github.com/repos/deislabs/porter/releases | jq -r '.[0].tag_name'
+    register: latest_porter
+    changed_when: false
+    check_mode: false
+
+  - name: Set porter version
+    set_fact:
+      porter_version: "{{ latest_porter.stdout }}"
+
 - include_tasks: debian.yml
   when: ansible_os_family == 'Debian'
 

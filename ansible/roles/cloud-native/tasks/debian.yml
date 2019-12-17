@@ -1,3 +1,6 @@
+##########
+# dapr
+##########
 - name: Detect dapr
   shell: "dapr --version | { echo -n 'v'; grep -Po 'CLI version: \\K[^ ]*'; }"
   ignore_errors: true
@@ -29,3 +32,18 @@
       mode: 0755
       force: true
 
+##########
+# porter
+##########
+- name: Detect porter
+  shell: "~/.porter/porter version | grep -Po 'porter \\K[^ ]*'"
+  ignore_errors: true
+  register: current_porter_version
+  changed_when: false
+  check_mode: false
+
+- name: Install porter
+  when: current_porter_version is failed or current_porter_version.stdout != porter_version
+  shell: |
+    export PORTER_PERMALINK={{ porter_version }}
+    curl https://cdn.deislabs.io/porter/latest/install-linux.sh | bash
