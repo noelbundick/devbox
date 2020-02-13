@@ -13,6 +13,13 @@
   apt:
     name: docker-ce
 
+- name: Add user to Docker group
+  become: true
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: true
+
 - when: compose_version == 'latest'
   block:
   - name: Install github3.py
