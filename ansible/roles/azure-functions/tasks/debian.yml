@@ -1,14 +1,53 @@
-- become: true
+- when: coretools_version == 'latest'
   block:
-  - name: Add Microsoft key
-    apt_key:
-      url: https://packages.microsoft.com/keys/microsoft.asc
+  - name: Install github3.py
+    pip:
+      name: github3.py
+      extra_args: --user
 
-  - name: Add Microsoft Ubuntu repository
-    apt_repository:
-      repo: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_distribution_release }}-prod {{ ansible_distribution_release }} main"
+  - name: Get latest Azure Functions core tools version
+    github_release:
+      user: Azure
+      repo: azure-functions-core-tools
+      action: latest_release
+    register: latest_coretools
+    changed_when: false
+    check_mode: false
 
-  - name: Install Azure Functions Core Tools
-    apt:
-      name: 
-      - azure-functions-core-tools
+  - name: Set Azure Functions core tools version
+    set_fact:
+      coretools_version: "{{ latest_coretools.tag }}"
+
+- name: Detect Azure Functions core tools
+  shell: "func --version"
+  register: current_coretools
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Azure Functions core tools
+  when: current_coretools is failed or current_coretools.stdout != coretools_version
+  become: true
+  block:
+  - name: Create staging directory for Azure Functions core tools
+    file:
+      path: /usr/local/src/azure-functions-core-tools
+      state: directory
+
+  - name: Extract Azure Functions core tools
+    unarchive:
+      src: "https://github.com/Azure/azure-functions-core-tools/releases/download/{{coretools_version}}/Azure.Functions.Cli.linux-x64.{{coretools_version}}.zip"
+      dest: /usr/local/src/azure-functions-core-tools
+      remote_src: true
+      force: true
+
+  - name: Mark func executable
+    file:
+      path: /usr/local/src/azure-functions-core-tools/func
+      mode: 0755
+
+  - name: Symlink func
+    file:
+      state: link
+      src: /usr/local/src/azure-functions-core-tools/func
+      dest: /usr/bin/func
+      force: true

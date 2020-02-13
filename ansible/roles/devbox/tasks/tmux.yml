@@ -1,3 +1,9 @@
+- name: Install tmux
+  become: true
+  apt:
+    name: 
+    - tmux
+
 - name: Create ~/.tmux/plugins
   file:
     path: ~/.tmux/plugins

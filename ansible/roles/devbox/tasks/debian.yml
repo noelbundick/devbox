@@ -6,7 +6,7 @@
 
   - name: Upgrade all packages
     apt:
-      upgrade: true
+      upgrade: safe
       autoclean: true
       autoremove: true
       update_cache: true
