@@ -8,7 +8,7 @@
   shell: |
     export NVM_DIR="$HOME/.nvm"
     . ~/.nvm/nvm.sh
-    nvm install node
+    nvm install --lts
     nvm alias default node
 
     BIN_DIR=$(dirname $(nvm which current))
