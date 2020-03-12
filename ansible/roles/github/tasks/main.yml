@@ -1,0 +1,25 @@
+- when: gh_version == 'latest'
+  block:
+  - name: Install github3.py
+    pip:
+      name: github3.py
+      extra_args: --user
+
+  - name: Get latest gh version
+    github_release:
+      user: cli
+      repo: cli
+      action: latest_release
+    register: latest_gh
+    changed_when: false
+    check_mode: false
+
+  - name: Set gh version
+    set_fact:
+      gh_version: "{{ latest_gh.tag }}"
+
+- include_tasks: debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: macosx.yml
+  when: ansible_os_family == 'MacOSX'

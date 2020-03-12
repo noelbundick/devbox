@@ -1,0 +1,14 @@
+- name: Detect gh
+  shell: "gh --version | grep -Po 'tag/\\K.*'"
+  ignore_errors: true
+  register: current_gh_version
+  changed_when: false
+  check_mode: false
+
+- name: Install gh
+  become: true
+  when: current_gh_version is failed or current_gh_version.stdout != gh_version
+  block:
+  - name: Install package
+    apt:
+      deb: "https://github.com/cli/cli/releases/download/{{ gh_version }}/gh_{{ gh_version[1:] }}_linux_amd64.deb"

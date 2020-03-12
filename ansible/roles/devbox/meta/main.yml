@@ -4,6 +4,7 @@ dependencies:
 - role: cloud-native
 - role: docker
 - role: dotnet
+- role: github
 - role: golang
 - role: hugo
 - role: java
