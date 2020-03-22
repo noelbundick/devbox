@@ -1,3 +1,22 @@
+- when: noelbundick_version == 'latest'
+  block:
+  - name: Install tools to handle github prerelease info
+    become: true
+    apt:
+      name:
+      - curl
+      - jq
+
+  - name: Get latest azure-cli-extension-noelbundick version
+    shell: curl https://api.github.com/repos/noelbundick/azure-cli-extension-noelbundick/releases | jq -r '.[0].tag_name[1:]'
+    register: latest_noelbundick
+    changed_when: false
+    check_mode: false
+
+  - name: Set azure-cli-extension-noelbundick version
+    set_fact:
+      noelbundick_version: "{{ latest_noelbundick.stdout }}"
+
 - name: Detect azure-cli-extension-noelbundick
   command: az extension show -n noelbundick --query version -o tsv
   register: current_noelbundick_version
@@ -6,9 +25,9 @@
   check_mode: false
 
 - name: Remove existing azure-cli-extension-noelbundick
-  when: current_noelbundick_version is success and current_noelbundick_version.stdout != version_noelbundick
+  when: current_noelbundick_version is success and current_noelbundick_version.stdout != noelbundick_version
   command: az extension remove -n noelbundick
 
 - name: Install azure-cli-extension-noelbundick
-  when: current_noelbundick_version is failed or current_noelbundick_version.stdout != version_noelbundick
-  command: az extension add -y --source https://github.com/noelbundick/azure-cli-extension-noelbundick/releases/download/v{{ version_noelbundick }}/noelbundick-{{ version_noelbundick }}-py2.py3-none-any.whl
+  when: current_noelbundick_version is failed or current_noelbundick_version.stdout != noelbundick_version
+  command: az extension add -y --source https://github.com/noelbundick/azure-cli-extension-noelbundick/releases/download/v{{ noelbundick_version }}/noelbundick-{{ noelbundick_version }}-py3-none-any.whl

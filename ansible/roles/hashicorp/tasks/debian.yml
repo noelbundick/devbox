@@ -2,6 +2,7 @@
   apt:
     name: unzip
 
+# Terraform
 - when: terraform_version == 'latest'
   block:
   - name: Install github3.py
@@ -34,6 +35,43 @@
   when: current_terraform_version is failed or current_terraform_version.stdout != terraform_version
   unarchive:
     src: "https://releases.hashicorp.com/terraform/{{terraform_version}}/terraform_{{terraform_version}}_linux_amd64.zip"
+    dest: /usr/local/bin
+    remote_src: true
+    mode: 0755
+
+# Packer
+- when: packer_version == 'latest'
+  block:
+  - name: Install github3.py
+    pip:
+      name: github3.py
+      extra_args: --user
+
+  - name: Get latest Packer version
+    github_release:
+      user: hashicorp
+      repo: packer
+      action: latest_release
+    register: latest_packer
+    changed_when: false
+    check_mode: false
+
+  - name: Set Packer version
+    set_fact:
+      packer_version: "{{ latest_packer.tag[1:] }}"
+
+- name: Detect packer
+  shell: "packer version | grep -Po 'Packer v\\K.*'"
+  ignore_errors: true
+  register: current_packer_version
+  changed_when: false
+  check_mode: false
+
+- name: Install packer
+  become: true
+  when: current_packer_version is failed or current_packer_version.stdout != packer_version
+  unarchive:
+    src: "https://releases.hashicorp.com/packer/{{packer_version}}/packer_{{packer_version}}_linux_amd64.zip"
     dest: /usr/local/bin
     remote_src: true
     mode: 0755

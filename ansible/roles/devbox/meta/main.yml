@@ -6,6 +6,7 @@ dependencies:
 - role: dotnet
 - role: github
 - role: golang
+- role: hashicorp
 - role: hugo
 - role: java
 - role: k8s-tools
@@ -13,4 +14,3 @@ dependencies:
 - role: pwsh
 - role: python
 - role: rust
-- role: terraform
