@@ -1,0 +1,7 @@
+- name: Add Azure Functions tap
+  homebrew_tap:
+    name: azure/functions
+
+- name: Install azure-functions-core-tools
+  homebrew:
+    name: azure-functions-core-tools

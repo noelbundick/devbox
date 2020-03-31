@@ -1,0 +1,6 @@
+- name: Install k8s tools
+  homebrew:
+    name:
+    - kubectl
+    - helm
+    - kind

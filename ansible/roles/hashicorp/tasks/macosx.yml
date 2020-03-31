@@ -1,0 +1,5 @@
+- name: Install Hashicorp tools
+  homebrew:
+    name:
+    - terraform
+    - packer

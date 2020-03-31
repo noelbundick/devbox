@@ -1,0 +1,16 @@
+- name: Set permissions for zsh autocompletions
+  become: true
+  file:
+    path: /usr/local/share/zsh
+    owner: root
+    group: staff
+    mode: 0755
+
+- name: Set permissions for zsh autocompletions
+  become: true
+  file:
+    path: /usr/local/share/zsh/site-functions
+    owner: root
+    group: staff
+    mode: 0755
+

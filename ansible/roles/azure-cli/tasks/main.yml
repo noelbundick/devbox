@@ -2,6 +2,6 @@
   when: ansible_os_family == 'Debian'
 
 - include_tasks: macosx.yml
-  when: ansible_os_family == 'MacOSX'
+  when: ansible_distribution == 'MacOSX'
 
 - include_tasks: noelbundick.yml

@@ -19,3 +19,12 @@
     - liblzma-dev
     - python-openssl
     - git
+
+- name: Check for pyenv
+  stat:
+    path: ~/.pyenv
+  register: pyenv
+
+- name: Install pyenv
+  when: not pyenv.stat.exists
+  shell: curl https://pyenv.run | bash

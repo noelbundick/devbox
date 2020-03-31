@@ -1,0 +1,3 @@
+- name: Install OpenJDK
+  homebrew_cask:
+    name: java

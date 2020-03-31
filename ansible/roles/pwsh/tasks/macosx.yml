@@ -1,0 +1,3 @@
+- name: Install pwsh
+  homebrew_cask:
+    name: powershell

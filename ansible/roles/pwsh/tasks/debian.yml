@@ -1,0 +1,14 @@
+- become: true
+  block:
+  - name: Add Microsoft key
+    apt_key:
+      url: https://packages.microsoft.com/keys/microsoft.asc
+
+  - name: Add Microsoft Ubuntu repository
+    apt_repository:
+      repo: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_distribution_release }}-prod {{ ansible_distribution_release }} main"
+
+  - name: Install pwsh
+    apt:
+      name: 
+      - powershell

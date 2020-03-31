@@ -1,3 +1,7 @@
+- name: Install tools to untar files
+  homebrew:
+    name: gnu-tar
+
 ##########
 # dapr
 ##########
@@ -12,7 +16,7 @@
 
   - name: Extract dapr
     unarchive:
-      src: "https://github.com/dapr/cli/releases/download/{{ dapr_version }}/dapr_linux_amd64.tar.gz"
+      src: "https://github.com/dapr/cli/releases/download/{{ dapr_version }}/dapr_darwin_amd64.tar.gz"
       dest: /usr/local/src/dapr
       remote_src: true
       force: true
@@ -32,4 +36,4 @@
   when: current_porter_version is failed or current_porter_version.stdout != porter_version
   shell: |
     export PORTER_PERMALINK={{ porter_version }}
-    curl https://cdn.porter.sh/latest/install-linux.sh | bash
+    curl https://cdn.porter.sh/latest/install-mac.sh | bash

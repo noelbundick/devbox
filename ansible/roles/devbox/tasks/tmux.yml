@@ -1,8 +1,14 @@
 - name: Install tmux
   become: true
+  when: ansible_os_family == 'Debian'
   apt:
     name: 
     - tmux
+
+- name: Install tmux
+  when: ansible_distribution == 'MacOSX'
+  homebrew:
+    name: tmux
 
 - name: Create ~/.tmux/plugins
   file:
