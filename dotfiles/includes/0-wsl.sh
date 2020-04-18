@@ -22,4 +22,9 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
   # Remove Windows node from PATH to prevent accidental npm selection
   export PATH=$(echo $PATH | sed -e 's/:\/mnt\/c\/Program Files\/nodejs\///' -e "s/:\/mnt\/c\/Users\/$WIN_USER\/AppData\/Roaming\/npm//")
 
+  function beats() {
+    local PLAYLIST=PLt7bG0K25iXgmw39iaVpZRszuwcsGNJFW  # endless chillhop
+    # TODO: find a way to unset WS_CAPTION so it's truly frameless
+    '/mnt/c/Program Files (x86)/BraveSoftware/Brave-Browser/Application/brave.exe' --app="https://www.youtube.com/embed?listType=playlist&list=${PLAYLIST}&autoplay=1&color=red&controls=0&disablekb=1&iv_load_policy=3&loop=1&modestbranding=1&rel=0" --beats
+  }
 fi
