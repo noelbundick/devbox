@@ -36,6 +36,11 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# hook for other scripts to inject custom prompt logic as needed
+__customprompt() {
+  : # do nothing
+}
+
 # Activate includes that don't contain '__'
 # If ordering matters, name files with numbers
 for d in ~/.devbox/dotfiles/includes/* ; do
@@ -57,7 +62,7 @@ __venv_ps1() {
 }
 
 dumb() {
-  export PROMPT_COMMAND="history -a;history -c;history -r;"
+  export PROMPT_COMMAND="history -a;history -c;history -r;__customprompt;"
   export PS1='\W\$ '
 }
 
@@ -65,7 +70,7 @@ dumb() {
 smart() {
   export GIT_PS1_SHOWCOLORHINTS=true
   export GIT_PS1_SHOWDIRTYSTATE=true
-  export PROMPT_COMMAND='history -a;history -c;history -r;__venv_ps1; __git_ps1 "$VENV_PREFIX\W" "\\\$ "'
+  export PROMPT_COMMAND='history -a;history -c;history -r;__venv_ps1; __git_ps1 "$VENV_PREFIX\W" "\\\$ ";__customprompt;'
 }
 
 smart
