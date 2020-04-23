@@ -8,8 +8,7 @@ for dotfile in $(find "$SCRIPT_DIR/../dotfiles" -maxdepth 1 -name ".*"); do
   if [ -f "$dotfile" ]; then
     ABS_PATH=$(readlink -m $dotfile)
     NAME=$(basename $ABS_PATH)
-    # ln -sf $ABS_PATH ~/$NAME
-    echo $ABS_PATH
+    ln -sf $ABS_PATH ~/$NAME
   fi
 done
 
