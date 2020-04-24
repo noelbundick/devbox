@@ -23,15 +23,6 @@
     dest: "/etc/wsl.conf"
     remote_src: true
 
-# From https://github.com/microsoft/WSL/issues/4737
-# Disable X11 and pulseaudio checks for startup speed
-- name: Custom wsl-integration.sh
-  become: true
-  copy:
-    src: "/home/{{ lookup('env','USER') }}/.devbox/wsl/wsl-integration.sh"
-    dest: "/etc/profile.d/wsl-integration.sh"
-    remote_src: true
-
 - name: Link WSL dotfiles
   file:
     state: link

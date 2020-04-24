@@ -15,7 +15,8 @@
             "fontSize" : 10,
             "useAcrylic": true,
             "acrylicOpacity": 0.95,
-            "startingDirectory": "//wsl$/Ubuntu-18.04/home/noel"
+            "startingDirectory": "//wsl$/Ubuntu-18.04/home/noel",
+            "suppressApplicationTitle": true
         },
         {
             "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
@@ -24,7 +25,8 @@
             "source": "Windows.Terminal.PowershellCore",
             "fontSize" : 10,
             "useAcrylic": true,
-            "acrylicOpacity": 0.95
+            "acrylicOpacity": 0.95,
+            "suppressApplicationTitle": true
         },
         {
             "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
@@ -35,7 +37,22 @@
             "fontFace": "DejaVu Sans Mono for Powerline",
             "fontSize" : 10,
             "useAcrylic": true,
-            "acrylicOpacity": 0.95
+            "acrylicOpacity": 0.95,
+            "suppressApplicationTitle": true
+        },
+        {
+            "guid": "{c6eaf9f4-9999-9999-9999-066e8a4b2004}",
+            "hidden": false,
+            "name": "Ubuntu-20.04",
+            "icon": "ms-appx:///ProfileIcons/{9acb9455-ca41-5af7-950f-6bca1bc9722f}.png",
+            "commandline": "wsl -d Ubuntu-20.04 /bin/bash",
+            "colorScheme": "Solarized Dark",
+            "fontFace" : "DejaVu Sans Mono for Powerline",
+            "fontSize" : 10,
+            "useAcrylic": true,
+            "acrylicOpacity": 0.95,
+            "startingDirectory": "//wsl$/Ubuntu-20.04/home/noel",
+            "suppressApplicationTitle": true
         },
         {
             // Make changes here to the cmd.exe profile
@@ -58,6 +75,12 @@
             "source": "Windows.Terminal.Wsl"
         },
         {
+            "guid": "{07b52e3e-de2c-5db4-bd2d-ba144ed6c273}",
+            "hidden": true,
+            "name": "Ubuntu-20.04",
+            "source": "Windows.Terminal.Wsl"
+        },
+        {
             "guid": "{570fcb8d-792c-5ac7-ab1f-5cfb2cdfdb99}",
             "hidden": true,
             "name": "docker-desktop",
@@ -70,8 +93,6 @@
             "source": "Windows.Terminal.Wsl"
         }
     ],
-    // Add custom color schemes to this array
-    "schemes": [],
     // Add any keybinding overrides to this array.
     // To unbind a default keybinding, set the command to "unbound"
     "keybindings": [
