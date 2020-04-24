@@ -33,3 +33,8 @@ function ssa() {
   eval $(ssh-agent -s)
   ssh-add ~/.ssh/id_rsa
 }
+
+# Edit devbox
+function devbox() {
+  $(cd ~/.devbox && code .)
+}

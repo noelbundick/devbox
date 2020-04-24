@@ -28,13 +28,19 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
     '/mnt/c/Program Files (x86)/BraveSoftware/Brave-Browser/Application/brave.exe' --app="https://www.youtube.com/embed?listType=playlist&list=${PLAYLIST}&autoplay=1&color=red&controls=0&disablekb=1&iv_load_policy=3&loop=1&modestbranding=1&rel=0" --beats
   }
 
-  # WSL2 clock skew hack
-  __customprompt() {
-    NOW=$(date +%s)
-    if (( NOW > WSL_NEXT_CLOCKSYNC )); then
-      echo "$(date -Iseconds) - hwclock [$WSL_NEXT_CLOCKSYNC : $NOW]" >> ~/.wsltimesync
-      nohup wsl.exe -u root -c 'hwclock -s' &>/dev/null &
-      export WSL_NEXT_CLOCKSYNC=$(date --date='+5 minutes' +%s)
-    fi
+  function keeb() {
+    local kb="$1"
+    case "$1" in
+      "dz60")
+        echo "https://raw.githubusercontent.com/noelbundick/devbox/master/keyboard/dz60.json" | clip.exe
+        wslview "https://config.qmk.fm/#/dz60/LAYOUT_60_ansi"
+        ;;
+      "annepro2")
+        $(nohup "/mnt/c/Program Files/ObinsKit/ObinsKit.exe" &>/dev/null & disown)
+        ;;
+      *)
+        echo "Error: Keyboard $1 not found"
+        ;;
+    esac
   }
 fi
