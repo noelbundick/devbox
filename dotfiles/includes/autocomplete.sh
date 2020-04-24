@@ -1,4 +1,4 @@
-if [ -n "$BASH_VERSION" ] && command -v kubectl; then
+if [ -n "$BASH_VERSION" ] && command -v kubectl &>/dev/null; then
   source <(kubectl completion bash)
   source <(kubectl completion bash | sed 's/kubectl/k/g')
 fi

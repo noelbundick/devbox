@@ -1,3 +1,7 @@
+- become: true
+  apt:
+    name: unzip
+
 - when: coretools_version == 'latest'
   block:
   - name: Install github3.py

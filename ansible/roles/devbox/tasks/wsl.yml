@@ -12,9 +12,9 @@
     force: true
   with_dict:
     wincode: "/mnt/c/code"
+    wintemp: "/mnt/c/temp"
     desktop: "/mnt/c/Users/{{win_user.stdout}}/Desktop"
     downloads: "/mnt/c/Users/{{win_user.stdout}}/Downloads"
-    temp: "/mnt/c/temp"
 
 - name: Add wsl.conf
   become: true
