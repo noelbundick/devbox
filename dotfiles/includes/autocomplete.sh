@@ -1,9 +1,9 @@
-if [ -n "$BASH_VERSION" ]; then
+if [ -n "$BASH_VERSION" ] && command -v kubectl; then
   source <(kubectl completion bash)
   source <(kubectl completion bash | sed 's/kubectl/k/g')
 fi
 
-if [ -n "$ZSH_VERSION" ]; then
+if [ -n "$ZSH_VERSION" ] && command -v kubectl; then
   autoload -Uz compinit
   compinit
 
