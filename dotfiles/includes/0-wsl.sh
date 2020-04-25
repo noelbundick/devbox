@@ -5,15 +5,20 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
 
   # Aliases
   alias explorer="explorer.exe"
+
+  function wininvoke() {
+    local program="$1"
+    { "$program" "${@:2}" & disown; } &>/dev/null
+  }
   
   function fork() {
-    /mnt/c/Users/$WIN_USER/AppData/Local/Fork/Fork.exe $(wslpath -aw .)
+    wininvoke "/mnt/c/Users/$WIN_USER/AppData/Local/Fork/Fork.exe" $(wslpath -aw .)
   }
   
   function gitext() {
     local current_path=$(wslpath -aw .)
     local code_path=$(echo $current_path | sed -e 's|\\\\wsl\$\\.*\\home\\.*\\code|C:\\wslcode|g')
-    nohup /mnt/c/Program\ Files\ \(x86\)/GitExtensions/GitExtensions.exe browse $code_path >/dev/null 2>&1 & disown
+    wininvoke "/mnt/c/Program Files (x86)/GitExtensions/GitExtensions.exe" browse $code_path
   }
 
   # Run Linux containers by default
@@ -25,7 +30,7 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
   function beats() {
     local PLAYLIST=PLt7bG0K25iXgmw39iaVpZRszuwcsGNJFW  # endless chillhop
     # TODO: find a way to unset WS_CAPTION so it's truly frameless
-    '/mnt/c/Program Files (x86)/BraveSoftware/Brave-Browser/Application/brave.exe' --app="https://www.youtube.com/embed?listType=playlist&list=${PLAYLIST}&autoplay=1&color=red&controls=0&disablekb=1&iv_load_policy=3&loop=1&modestbranding=1&rel=0" --beats
+    wininvoke '/mnt/c/Program Files (x86)/BraveSoftware/Brave-Browser/Application/brave.exe' --app="https://www.youtube.com/embed?listType=playlist&list=${PLAYLIST}&autoplay=1&color=red&controls=0&disablekb=1&iv_load_policy=3&loop=1&modestbranding=1&rel=0" --beats
   }
 
   function keeb() {
@@ -36,7 +41,7 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
         wslview "https://config.qmk.fm/#/dz60/LAYOUT_60_ansi"
         ;;
       "annepro2")
-        $(nohup "/mnt/c/Program Files/ObinsKit/ObinsKit.exe" &>/dev/null & disown)
+        wininvoke "/mnt/c/Program Files/ObinsKit/ObinsKit.exe"
         ;;
       *)
         echo "Error: Keyboard $1 not found"
