@@ -1,5 +1,5 @@
 # Activate pyenv
-if [ -d "~/.pyenv/bin" ]; then
+if [ -d ~/.pyenv/bin ]; then
   export PATH="~/.pyenv/bin:$PATH"
   eval "$(pyenv init -)"
 
