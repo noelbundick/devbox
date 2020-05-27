@@ -1,3 +1,10 @@
 # keyboard
 
-* [dz60](https://kbdfans.com/products/dz60-60-pcb)
+## QMK
+
+* [noelbundick/qmk_firmwware](https://github.com/noelbundick/qmk_firmware/tree/noelbundick)
+
+```shell
+make lets_split/rev2:noelbundick
+make dz60:noelbundick
+```

@@ -1,0 +1,7 @@
+- become: true
+  block:
+  - name: Install avr toolchain
+    apt:
+      name: 
+      - gcc-avr
+      - avr-libc
