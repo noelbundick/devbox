@@ -14,7 +14,7 @@
       name: jq
 
   - name: Get latest dapr version
-    shell: curl https://api.github.com/repos/dapr/cli/releases | jq -r '.[0].tag_name'
+    shell: "curl https://api.github.com/repos/dapr/cli/releases -H 'Authorization: token {{ github_pat }}' | jq -r '.[0].tag_name'"
     register: latest_dapr
     changed_when: false
     check_mode: false
@@ -46,7 +46,7 @@
       name: jq
 
   - name: Get latest porter version
-    shell: curl https://api.github.com/repos/deislabs/porter/releases | jq -r '.[0].tag_name'
+    shell: "curl https://api.github.com/repos/deislabs/porter/releases -H 'Authorization: token {{ github_pat }}' | jq -r '.[0].tag_name'"
     register: latest_porter
     changed_when: false
     check_mode: false

@@ -32,6 +32,7 @@
       user: docker
       repo: compose
       action: latest_release
+      token: "{{ github_pat }}"
     register: latest_compose
     changed_when: false
     check_mode: false

@@ -3,3 +3,5 @@
   connection: local
   roles:
   - devbox
+  vars_files:
+  - secrets/secrets.yaml

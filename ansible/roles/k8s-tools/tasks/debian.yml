@@ -36,7 +36,7 @@
       state: directory
   - name: Download and extract Helm
     unarchive:
-      src: "https://storage.googleapis.com/kubernetes-helm/helm-v{{helm_version}}-linux-amd64.tar.gz"
+      src: "https://get.helm.sh/helm-v{{helm_version}}-linux-amd64.tar.gz"
       dest: /usr/local/src/helm
       remote_src: true
       force: true

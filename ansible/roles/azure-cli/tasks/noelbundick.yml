@@ -14,7 +14,7 @@
       name: jq
 
   - name: Get latest azure-cli-extension-noelbundick version
-    shell: curl https://api.github.com/repos/noelbundick/azure-cli-extension-noelbundick/releases | jq -r '.[0].tag_name[1:]'
+    shell: "curl https://api.github.com/repos/noelbundick/azure-cli-extension-noelbundick/releases -H 'Authorization: token {{ github_pat }}' | jq -r '.[0].tag_name[1:]'"
     register: latest_noelbundick
     changed_when: false
     check_mode: false

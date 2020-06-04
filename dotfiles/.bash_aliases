@@ -34,7 +34,13 @@ function ssa() {
   ssh-add ~/.ssh/id_rsa
 }
 
-# Edit devbox
+# Update devbox with latest bits
 function devbox() {
+  ANSIBLE_VAULT_PASSWORD_FILE=~/.devbox/ansible/secrets/.vault_pass.txt \
+    ansible-playbook -K ~/.devbox/ansible/devbox.yml
+}
+
+# Edit devbox
+function devrc() {
   $(cd ~/.devbox && code .)
 }
