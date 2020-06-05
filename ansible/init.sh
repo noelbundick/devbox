@@ -7,6 +7,7 @@ if [ ! -d ~/.devbox ]; then
 fi
 
 # Create a random GUID for use with Ansible vault
+mkdir -p ~/.devbox/ansible/secrets
 uuidgen > ~/.devbox/ansible/secrets/.vault_pass.txt
 export ANSIBLE_VAULT_PASSWORD_FILE=~/.devbox/ansible/secrets/.vault_pass.txt
 
