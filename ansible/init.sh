@@ -13,9 +13,7 @@ export ANSIBLE_VAULT_PASSWORD_FILE=~/.devbox/ansible/secrets/.vault_pass.txt
 
 # Save a GitHub PAT for use with the GH API
 # PAT needs read:user because of a bug: https://github.com/sigmavirus24/github3.py/issues/797
-echo -n "Enter a GitHub PAT (needs read:user): "
-read -s GITHUB_PAT
-echo
+read -p "Enter a GitHub PAT (needs read:user): " -e -s GITHUB_PAT
 echo "github_pat: $GITHUB_PAT" >> ~/.devbox/ansible/secrets/secrets.yaml
 
 # Hacks for libssl1.1 on Ubuntu 18.04 (https://github.com/hashicorp/vagrant/issues/10914#issuecomment-503055527)
