@@ -3,5 +3,7 @@
   - name: Install avr toolchain
     apt:
       name: 
-      - gcc-avr
       - avr-libc
+      - dfu-util
+      - gcc-arm-none-eab
+      - gcc-avr

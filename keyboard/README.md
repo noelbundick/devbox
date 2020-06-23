@@ -5,6 +5,9 @@
 * [noelbundick/qmk_firmwware](https://github.com/noelbundick/qmk_firmware/tree/noelbundick)
 
 ```shell
-make lets_split/rev2:noelbundick
-make dz60:noelbundick
+# Edit QMK firmware
+qmkrc
+
+# Compile everything, all firmware copied to ~/downloads/qmk
+qmkc
 ```

@@ -42,5 +42,29 @@ function devbox() {
 
 # Edit devbox
 function devrc() {
-  $(cd ~/.devbox && code .)
+  (cd ~/.devbox && code .)
+}
+
+# Edit QMK
+function qmkrc() {
+  (cd ~/code/noelbundick/qmk_firmware && code .)
+}
+
+# Compile all keyboards
+function qmkc() {
+  (
+    cd ~/code/noelbundick/qmk_firmware
+    source venv~/bin/activate
+
+    make 40percentclub/gherkin:noelbundick
+    make dz60:noelbundick
+    make dztech/dz60rgb_ansi/v2:noelbundick
+    make helix:noelbundick
+    make launchpad:noelbundick
+    make lets_split/rev2:noelbundick
+    make planck/rev6:noelbundick
+
+    mkdir -p ~/downloads/qmk
+    cp .build/*.{hex,bin} ~/downloads/qmk
+  )
 }
