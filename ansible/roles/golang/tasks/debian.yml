@@ -8,7 +8,7 @@
 - when: go_version == 'latest'
   block:
   - name: Get latest Go version
-    shell: wget -qO- https://golang.org/dl/ | grep -oP 'https:\/\/dl\.google\.com\/go\/go\K([0-9\.]+)(?=\..*\.tar\.gz)' | head -n 1
+    shell: wget -qO- https://golang.org/dl/ | grep -oP '\/dl\/go\K([0-9\.]+)(?=\..*\.tar\.gz)' | head -n 1
     register: latest_go
     changed_when: false
     check_mode: false
@@ -21,6 +21,6 @@
   when: current_go is failed or current_go.stdout != go_version
   become: true
   unarchive:
-    src: "https://dl.google.com/go/go{{go_version}}.linux-amd64.tar.gz"
+    src: "https://golang.org/dl/go{{go_version}}.linux-amd64.tar.gz"
     dest: /usr/local
     remote_src: true
