@@ -53,16 +53,30 @@ function qmkrc() {
 # Compile all keyboards
 function qmkc() {
   (
+    LAYOUT=$1
+
+
     cd ~/code/noelbundick/qmk_firmware
     source venv~/bin/activate
 
-    make 40percentclub/gherkin:noelbundick
-    make dz60:noelbundick
-    make dztech/dz60rgb_ansi/v2:noelbundick
-    make helix:noelbundick
-    make launchpad:noelbundick
-    make lets_split/rev2:noelbundick
-    make planck/rev6:noelbundick
+    make 40percentclub/gherkin:noelbundick &
+    make dz60:noelbundick FORCE_LAYOUT=60_ansi &
+    make dz60:noelbundick FORCE_LAYOUT=60_hhkb &
+    make dztech/dz60rgb_ansi/v2:noelbundick &
+    make dztech/dz60rgb_ansi/v2:noelbundick-ansi-hhkb &
+    make helix:noelbundick &
+    make launchpad:noelbundick &
+    make lets_split/rev2:noelbundick &
+    make planck/rev6:noelbundick &
+    make crkbd:noelbundick &
+    make navi10:noelbundick &
+    make ai03/soyuz:noelbundick &
+    make dmqdesign/spin:noelbundick &
+    make qaz:noelbundick &
+    make primekb/prime_e:noelbundick &
+    make flehrad/bigswitch:noelbundick &
+    make coseyfannitutti/discipline:noelbundick FORCE_LAYOUT=65_ansi_blocker &
+    wait
 
     mkdir -p ~/downloads/qmk
     cp .build/*.{hex,bin} ~/downloads/qmk
