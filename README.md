@@ -19,10 +19,10 @@ Start here:
 
 ```shell
 # Linux
-curl https://raw.githubusercontent.com/noelbundick/devbox/master/ansible/init.sh | bash
+curl https://raw.githubusercontent.com/noelbundick/devbox/main/ansible/init.sh | bash
 
 # MacOS
-curl https://raw.githubusercontent.com/noelbundick/devbox/master/ansible/init.macos.sh | bash
+curl https://raw.githubusercontent.com/noelbundick/devbox/main/ansible/init.macos.sh | bash
 ```
 
 If/when you make some updates or pull latest:
