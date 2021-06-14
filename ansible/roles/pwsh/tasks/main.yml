@@ -1,5 +1,5 @@
 - include_tasks: debian.yml
-  when: ansible_os_family == 'Debian' and ansible_distribution_release != 'focal'
+  when: ansible_os_family == 'Debian'
 
 - include_tasks: macosx.yml
   when: ansible_distribution == 'MacOSX'

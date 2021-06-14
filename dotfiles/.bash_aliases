@@ -64,6 +64,7 @@ function qmkc() {
     make dz60:noelbundick FORCE_LAYOUT=60_hhkb &
     make dztech/dz60rgb_ansi/v2:noelbundick &
     make dztech/dz60rgb_ansi/v2:noelbundick-ansi-hhkb &
+    make dztech/dz60rgb_wkl/v2:noelbundick &
     make helix:noelbundick &
     make launchpad:noelbundick &
     make lets_split/rev2:noelbundick &
@@ -73,9 +74,10 @@ function qmkc() {
     make ai03/soyuz:noelbundick &
     make dmqdesign/spin:noelbundick &
     make qaz:noelbundick &
-    make primekb/prime_e:noelbundick &
+    make primekb/prime_e/std:noelbundick &
     make flehrad/bigswitch:noelbundick &
-    make coseyfannitutti/discipline:noelbundick FORCE_LAYOUT=65_ansi_blocker &
+    make coseyfannitutti/discipline:noelbundick-human FORCE_LAYOUT=65_ansi_blocker &
+    make wilba_tech/wt65_f:noelbundick FORCE_LAYOUT=65_ansi_blocker &
     wait
 
     mkdir -p ~/downloads/qmk

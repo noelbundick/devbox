@@ -2,6 +2,10 @@
 name = Noel Bundick
 email = noelbundick@gmail.com
 [push]
-	default = simple
+	default = current
 [credential]
 	helper = /mnt/c/Program\\ Files/Git/mingw64/libexec/git-core/git-credential-manager.exe
+[init]
+	defaultBranch = main
+[alias]
+	permission-reset = !git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply
