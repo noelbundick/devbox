@@ -20,38 +20,5 @@
     groups: docker
     append: true
 
-- when: compose_version == 'latest'
-  block:
-  - name: Install github3.py
-    pip:
-      name: github3.py
-      extra_args: --user
-
-  - name: Get latest Docker Compose version
-    github_release:
-      user: docker
-      repo: compose
-      action: latest_release
-      token: "{{ github_pat }}"
-    register: latest_compose
-    changed_when: false
-    check_mode: false
-
-  - name: Set Compose version
-    set_fact:
-      compose_version: "{{ latest_compose.tag }}"
-
-- name: Detect docker-compose
-  shell: "docker-compose version | grep -Po 'docker-compose version \\K[^,]*'"
-  register: current_docker_compose
-  ignore_errors: true
-  changed_when: false
-
 - name: Install docker-compose
-  when: current_docker_compose is failed or current_docker_compose.stdout != compose_version
-  become: true
-  get_url:
-    url: "https://github.com/docker/compose/releases/download/{{compose_version}}/docker-compose-Linux-x86_64"
-    dest: /usr/local/bin/docker-compose
-    mode: 0755
-    force: yes
+  shell: curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh

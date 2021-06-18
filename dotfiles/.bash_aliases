@@ -78,6 +78,7 @@ function qmkc() {
     make flehrad/bigswitch:noelbundick &
     make coseyfannitutti/discipline:noelbundick-human FORCE_LAYOUT=65_ansi_blocker &
     make wilba_tech/wt65_f:noelbundick FORCE_LAYOUT=65_ansi_blocker &
+    make gmmk/pro:noelbundick &
     wait
 
     mkdir -p ~/downloads/qmk

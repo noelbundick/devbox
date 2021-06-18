@@ -12,4 +12,4 @@
     apt:
       name: 
       - apt-transport-https
-      - dotnet-sdk-3.1
+      - dotnet-sdk-5.0

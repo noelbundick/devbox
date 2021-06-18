@@ -2,7 +2,7 @@
   git:
     repo: https://github.com/nvm-sh/nvm.git
     dest: ~/.nvm
-    version: v0.37.2
+    version: v0.38.0
 
 - name: Install latest node via nvm
   shell: |

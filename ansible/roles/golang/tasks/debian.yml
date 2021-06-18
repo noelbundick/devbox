@@ -20,7 +20,13 @@
 - name: "Install Go {{ go_version }}"
   when: current_go is failed or current_go.stdout != go_version
   become: true
-  unarchive:
-    src: "https://golang.org/dl/go{{go_version}}.linux-amd64.tar.gz"
-    dest: /usr/local
-    remote_src: true
+  block:
+    - name: Delete old Go
+      file:
+        path: /usr/local/go
+        state: absent
+    - name: "Extract Go {{ go_version }}"
+      unarchive:
+        src: "https://golang.org/dl/go{{go_version}}.linux-amd64.tar.gz"
+        dest: /usr/local
+        remote_src: true

@@ -32,4 +32,4 @@
   when: current_porter_version is failed or current_porter_version.stdout != porter_version
   shell: |
     export PORTER_PERMALINK={{ porter_version }}
-    curl https://cdn.porter.sh/latest/install-linux.sh | bash
+    curl -L https://cdn.porter.sh/latest/install-linux.sh | bash
