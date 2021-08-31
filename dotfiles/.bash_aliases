@@ -1,4 +1,6 @@
 alias bashrc="vim ~/.bashrc"
+alias docker-compose="docker compose"
+alias homerc="code --folder-uri 'vscode-remote://ssh-remote+192.168.1.69/home/pi/home-assistant'"
 alias k="kubectl"
 alias sshpublic="cat ~/.ssh/id_rsa.pub"
 alias sshprivate="cat ~/.ssh/id_rsa"
@@ -32,6 +34,11 @@ function dnukeimages() {
 function ssa() {
   eval $(ssh-agent -s)
   ssh-add ~/.ssh/id_rsa
+}
+
+function sshcode() {
+  local REMOTE_PATH="${2:-/}"
+  code --folder-uri "vscode-remote://ssh-remote+$1$REMOTE_PATH"
 }
 
 # Update devbox with latest bits
@@ -68,7 +75,9 @@ function qmkc() {
     make helix:noelbundick &
     make launchpad:noelbundick &
     make lets_split/rev2:noelbundick &
+    make lets_split/rev2:via &
     make planck/rev6:noelbundick &
+    make preonic/rev3:noelbundick &
     make crkbd:noelbundick &
     make navi10:noelbundick &
     make ai03/soyuz:noelbundick &
@@ -76,7 +85,7 @@ function qmkc() {
     make qaz:noelbundick &
     make primekb/prime_e/std:noelbundick &
     make flehrad/bigswitch:noelbundick &
-    make coseyfannitutti/discipline:noelbundick-human FORCE_LAYOUT=65_ansi_blocker &
+    make coseyfannitutti/discipline:noelbundick FORCE_LAYOUT=65_ansi_blocker &
     make wilba_tech/wt65_f:noelbundick FORCE_LAYOUT=65_ansi_blocker &
     make gmmk/pro:noelbundick &
     wait

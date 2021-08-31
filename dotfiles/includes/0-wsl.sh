@@ -2,6 +2,9 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
 
   # The current Windows username can be useful
   export WIN_USER=$(cd /mnt/c && cmd.exe /d /c echo %USERNAME% | tr -d '\r\n')
+  
+  # Clear the /tmp directory
+  wsl.exe -d $WSL_DISTRO_NAME -u root /usr/sbin/tmpreaper 7d /tmp
 
   # Aliases
   alias explorer="explorer.exe"
@@ -26,5 +29,19 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
 
   # Remove Windows node from PATH to prevent accidental npm selection
   export PATH=$(echo $PATH | sed -e 's/:\/mnt\/c\/Program Files\/nodejs\///' -e "s/:\/mnt\/c\/Users\/$WIN_USER\/AppData\/Roaming\/npm//")
+
+  # Use Docker inside WSL
+  function start-docker() {
+    if ! pidof dockerd; then
+      nohup sudo -b dockerd 2>&1 < /dev/null > /dev/null 2>&1
+    fi
+  }
+
+  function stop-docker() {
+    PID=$(pidof dockerd)
+    if [ $? -eq 0 ]; then
+      sudo kill $PID
+    fi
+  }
 
 fi

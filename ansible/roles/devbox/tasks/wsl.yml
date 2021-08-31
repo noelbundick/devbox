@@ -31,3 +31,9 @@
     force: true
   with_fileglob:
     - '~/.devbox/dotfiles/wsl/.*'
+
+- name: Install packages for WSL
+  become: true
+  apt:
+    name:
+      - tmpreaper

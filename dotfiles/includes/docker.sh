@@ -1,3 +1,5 @@
+export DOCKER_BUILDKIT=1
+
 # Build current directory as 'quick'
 function qb() {
   docker build -t quick .
