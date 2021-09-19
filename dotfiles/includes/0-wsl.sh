@@ -30,18 +30,4 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
   # Remove Windows node from PATH to prevent accidental npm selection
   export PATH=$(echo $PATH | sed -e 's/:\/mnt\/c\/Program Files\/nodejs\///' -e "s/:\/mnt\/c\/Users\/$WIN_USER\/AppData\/Roaming\/npm//")
 
-  # Use Docker inside WSL
-  function start-docker() {
-    if ! pidof dockerd; then
-      nohup sudo -b dockerd 2>&1 < /dev/null > /dev/null 2>&1
-    fi
-  }
-
-  function stop-docker() {
-    PID=$(pidof dockerd)
-    if [ $? -eq 0 ]; then
-      sudo kill $PID
-    fi
-  }
-
 fi

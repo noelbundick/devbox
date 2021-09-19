@@ -1,17 +1,21 @@
-- name: Add Docker key
+- name: Add Microsoft key
   become: true
   apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+    url: https://packages.microsoft.com/keys/microsoft.asc
 
 - name: Add Docker to sources list
   become: true
   apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} edge"
+    repo: "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_distribution_release }}-prod {{ ansible_distribution_release }} main"
 
 - name: Install Docker
   become: true
   apt:
-    name: docker-ce
+    name:
+    - moby-cli
+    - moby-buildx
+    - moby-compose
+    - moby-engine
 
 - name: Add user to Docker group
   become: true
@@ -19,6 +23,3 @@
     name: "{{ ansible_user_id }}"
     groups: docker
     append: true
-
-- name: Install docker-compose
-  shell: curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
