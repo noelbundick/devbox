@@ -1,6 +1,6 @@
 alias bashrc="vim ~/.bashrc"
 alias docker-compose="docker compose"
-alias homerc="code --folder-uri 'vscode-remote://ssh-remote+192.168.1.69/home/pi/home-assistant'"
+alias homerc="code --folder-uri 'vscode-remote://ssh-remote+192.168.1.201/home/noel/home-assistant'"
 alias k="kubectl"
 alias sshpublic="cat ~/.ssh/id_rsa.pub"
 alias sshprivate="cat ~/.ssh/id_rsa"
