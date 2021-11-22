@@ -4,7 +4,9 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
   export WIN_USER=$(cd /mnt/c && cmd.exe /d /c echo %USERNAME% | tr -d '\r\n')
   
   # Clear the /tmp directory
-  wsl.exe -d $WSL_DISTRO_NAME -u root /usr/sbin/tmpreaper 7d /tmp
+  function clearTmp() {
+    wsl.exe -d $WSL_DISTRO_NAME -u root /usr/sbin/tmpreaper 7d /tmp
+  }
 
   # Aliases
   alias explorer="explorer.exe"
@@ -12,10 +14,6 @@ if [ -d /proc/sys/kernel ] && grep -iq microsoft /proc/sys/kernel/osrelease; the
   function wininvoke() {
     local program="$1"
     { "$program" "${@:2}" & disown; } &>/dev/null
-  }
-  
-  function fork() {
-    wininvoke "/mnt/c/Users/$WIN_USER/AppData/Local/Fork/Fork.exe" $(wslpath -aw .)
   }
   
   function gitext() {
