@@ -43,7 +43,6 @@
       src: "https://github.com/Azure/azure-functions-core-tools/releases/download/{{coretools_version}}/Azure.Functions.Cli.linux-x64.{{coretools_version}}.zip"
       dest: /usr/local/src/azure-functions-core-tools
       remote_src: true
-      force: true
 
   - name: Mark func executable
     file:

@@ -39,7 +39,6 @@
       src: "https://get.helm.sh/helm-v{{helm_version}}-linux-amd64.tar.gz"
       dest: /usr/local/src/helm
       remote_src: true
-      force: true
   - name: Copy Helm to /usr/local/bin
     copy:
       src: /usr/local/src/helm/linux-amd64/helm

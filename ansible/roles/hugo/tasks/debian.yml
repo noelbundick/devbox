@@ -19,7 +19,6 @@
       src: "https://github.com/gohugoio/hugo/releases/download/{{ hugo_version }}/hugo_{{ hugo_version[1:] }}_Linux-64bit.tar.gz"
       dest: /usr/local/src/hugo
       remote_src: true
-      force: true
 
   - name: Copy Hugo to /usr/local/bin
     copy:
