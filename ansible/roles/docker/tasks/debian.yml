@@ -17,6 +17,12 @@
     - moby-compose
     - moby-engine
 
+- name: Get init script
+  become: true
+  shell: |
+    curl -L https://raw.githubusercontent.com/moby/moby/master/contrib/init/sysvinit-debian/docker -o /etc/init.d/docker
+    chmod +x /etc/init.d/docker
+
 - name: Add user to Docker group
   become: true
   user:
